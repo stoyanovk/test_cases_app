@@ -10,7 +10,7 @@ app.use("/", api);
 
 async function start() {
   try {
-    await secualize.sync();
+    await secualize.sync({ force: true });
     app.listen(3000, function() {
       console.log("Example app listening on port 3000!");
     });

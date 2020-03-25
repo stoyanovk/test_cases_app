@@ -1,5 +1,10 @@
 const { Router } = require("express");
-const users = require("../models/user");
+const users = require("../models/users");
+const results = require("../models/results");
+const tasks = require("../models/tasks");
+const projects = require("../models/projects");
+const comments = require("../models/comments");
+const workers = require("../models/workers");
 const routes = new Router();
 
 routes.get("/", (req, res) => {

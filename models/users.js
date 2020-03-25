@@ -1,7 +1,9 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../database");
+const Tasks = require("./tasks");
+const Results = require("./results");
 
-const user = sequelize.define("user", {
+const Users = sequelize.define("user", {
   id: {
     allowNull: true,
     type: Sequelize.INTEGER,
@@ -32,4 +34,7 @@ const user = sequelize.define("user", {
   }
 });
 
-module.exports = user;
+Users.hasMany(Tasks, { foreignKey: "owner_id" });
+Users.hasMany(Results, { foreignKey: "owner_id" });
+
+module.exports = Users;
