@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 8.0.19, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.19, for macos10.15 (x86_64)
 --
 -- Host: localhost    Database: testcases
 -- ------------------------------------------------------
@@ -153,14 +153,14 @@ CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_name` varchar(255) DEFAULT NULL,
   `user_password` varchar(255) DEFAULT NULL,
-  `admin` tinyint(1) NOT NULL,
+  `admin` tinyint(1) NOT NULL DEFAULT '0',
   `email` varchar(255) DEFAULT NULL,
-  `temporaty_token` varchar(255) DEFAULT NULL,
+  `temporary_token` varchar(255) DEFAULT NULL,
   `life_time_token` varchar(255) DEFAULT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -169,6 +169,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (5,'MasterGennadiy','$2b$10$wCGXIeV3LBAqAKrVho5Bgua/d/CnB0C0FAEj53vi/ktEHv//ZY2bG',0,'lolkek@gmail.com',NULL,NULL,'2020-03-30 19:35:41','2020-03-30 19:35:41'),(7,'MasterFlomaster','$2b$10$wA46jCCj4y6mURkMKEYFreixJ8Cyr3S7hmfdj5ZzSiDT3UXCS7Enq',0,'masterflomaster@gmail.com',NULL,NULL,'2020-03-30 19:49:23','2020-03-30 19:49:23');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -205,6 +206,10 @@ UNLOCK TABLES;
 --
 -- Dumping events for database 'testcases'
 --
+
+--
+-- Dumping routines for database 'testcases'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -215,4 +220,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-03-25 22:44:01
+-- Dump completed on 2020-03-30 22:56:39

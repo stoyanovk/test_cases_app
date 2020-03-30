@@ -20,14 +20,15 @@ const Users = sequelize.define("user", {
   },
   admin: {
     type: Sequelize.BOOLEAN,
-    allowNull: false
+    allowNull: false,
+    defaultValue: false
   },
   email: {
     type: Sequelize.STRING,
     allowNull: true
   },
-  temporaty_token: {
-    type: Sequelize.STRING
+  temporary_token: {
+    type: Sequelize.STRING,
   },
   life_time_token: {
     type: Sequelize.STRING

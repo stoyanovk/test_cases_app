@@ -1,16 +1,17 @@
 const env = require("env2")("./.env");
 const express = require("express");
 const app = express();
-const secualize = require("./database");
-const api = require("./api");
+const sequelize = require("./database");
+const api = require("./api/routes");
 
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use("/", api);
+api(app);
 
 async function start() {
   try {
-    await secualize.sync({ force: true });
+    await sequelize.sync({ force: false });
     app.listen(3000, function() {
       console.log("Example app listening on port 3000!");
     });
