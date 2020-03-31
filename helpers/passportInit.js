@@ -5,7 +5,9 @@ const bcrypt = require("bcrypt");
 async function init(email, password, done) {
   try {
     const user = await User.findOne({ where: { email } });
-    const match = bcrypt.compare(password, user.passport);
+    console.log(password, user.password);
+    const match = await bcrypt.compare(password, user.user_password);
+
     if (!user) return done(null, false, { message: "user is not exist" });
     if (!match) return done(null, false, { message: "wrong password" });
     return done(null, { user: user.user_name, email: user.email });

@@ -10,9 +10,13 @@ const passport = require("passport");
 const routes = new Router();
 
 routes.get("/users", (req, res) => {
+  console.dir(req);
   res.json({ user: req.user });
 });
-
+routes.get("/logout", (req, res) => {
+  req.session.destroy();
+  res.json({ user: req.user });
+});
 routes.post("/register", registerValidations, auth.createUser);
 routes.post("/auth", passport.authenticate("local"), (req, res) => {
   res.json({ user: req.user });
