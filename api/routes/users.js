@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const auth = require("../controllers/auth.controllers");
 const { registerValidations } = require("../../validations/register");
-
+const passport = require("passport");
 // const users = require("../../models/users");
 // const tasks = require("../../models/tasks");
 // const projects = require("../../models/projects");
@@ -10,8 +10,11 @@ const { registerValidations } = require("../../validations/register");
 const routes = new Router();
 
 routes.get("/users", (req, res) => {
-  res.json({ hello: "hello users" });
+  res.json({ user: req.user });
 });
 
-routes.post("/users", registerValidations, auth.createUser);
+routes.post("/register", registerValidations, auth.createUser);
+routes.post("/auth", passport.authenticate("local"), (req, res) => {
+  res.json({ user: req.user });
+});
 module.exports = routes;
