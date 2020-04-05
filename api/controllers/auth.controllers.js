@@ -14,7 +14,7 @@ module.exports.createUser = async function(req, res, next) {
       return res.status(226).json({ message: "user already exist" });
     }
     const password = await bcrypt.hash(req.body.password, 10);
-    const user = await users.create({
+    await users.create({
       user_name: req.body.user_name,
       user_password: password,
       email: req.body.email.toLowerCase()
