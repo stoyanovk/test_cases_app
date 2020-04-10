@@ -1,17 +1,17 @@
 const { Router } = require("express");
 const auth = require("../controllers/auth.controllers");
 const { registerValidations } = require("../../validations/register");
+const { loginValidations } = require("../../validations/login");
+const access = require("../../middleware/access");
 
-// const users = require("../../models/users");
-// const tasks = require("../../models/tasks");
-// const projects = require("../../models/projects");
-// const comments = require("../../models/comments");
-// const workers = require("../../models/workers");
 const routes = new Router();
 
-routes.get("/users", (req, res) => {
-  res.json({ hello: "hello users" });
+routes.get("/users", access, async (req, res) => {
+  res.json({ data: { user: req.user } });
 });
 
-routes.post("/users", registerValidations, auth.createUser);
+routes.post("/register", registerValidations, auth.createUser);
+
+routes.post("/auth", loginValidations, auth.login);
+
 module.exports = routes;

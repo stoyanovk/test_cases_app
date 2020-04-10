@@ -1,25 +1,50 @@
-const users = require("../../models/users");
-const bcrypt = require("bcrypt");
-const { validationResult } = require("express-validator");
+const Users = require("../../models/users");
 
-module.exports.createUser = async function(req, res, next) {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
-  }
+const { validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
+
+module.exports.createUser = async function (req, res) {
   try {
-    const candidate = await users.findOne({ where: { email: req.body.email } });
-    console.log(candidate);
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
+    const candidate = await Users.findOne({ where: { email: req.body.email } });
+
     if (candidate) {
       return res.status(226).json({ message: "user already exist" });
     }
-    const password = await bcrypt.hash(req.body.password, 10);
-    const user = await users.create({
-      user_name: req.body.user_name,
-      user_password: password,
-      email: req.body.email.toLowerCase()
+    const user = await Users.createUser(req.body);
+
+    res.status(201).json({ status: "success", data: { user } });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+module.exports.login = async function (req, res) {
+  try {
+    const candidate = await Users.findOne({ where: { email: req.body.email } });
+
+    if (!candidate) return res.json({ message: "Wrong email or password" });
+
+    const match = candidate.validPassword(req.body.password);
+
+    if (!match) return res.json({ message: "Wrong email or password" });
+
+    const {
+      dataValues: { user_password, ...rest },
+    } = candidate;
+    const token = jwt.sign({ user: rest }, process.env.JWT_SECRET, {
+      notBefore: "24 h",
     });
-    res.status(201).json({ status: "success" });
+
+    res.json({
+      status: "success",
+      data: { token, user: rest },
+    });
   } catch (e) {
     console.log(e);
   }
