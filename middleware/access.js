@@ -1,19 +1,20 @@
 const jwt = require("jsonwebtoken");
 async function access(req, res, next) {
   try {
-    if (!req.headers.referer.includes(process.env.RESOLVE_HOST))
-      throw new Error("bad host");
+    // if (!req.headers.referer.includes(process.env.RESOLVE_HOST))
+    //   throw new Error("bad host");
 
-    const token = req.headers["x-access-token"] || req.headers["authorization"];
+    const token = req.headers["x-access-token"];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    if (decoded && decoded.lifeTime < Date.now()) {
+
+    if (decoded) {
       req.user = decoded;
-      next();
+      return next();
     }
     return res.json({ message: "log in please" });
   } catch (e) {
     console.log(e);
+    // res.json({ message: "log in please" });
   }
 }
 module.exports = access;

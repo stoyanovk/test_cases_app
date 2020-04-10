@@ -6,8 +6,8 @@ const access = require("../../middleware/access");
 
 const routes = new Router();
 
-routes.get("/users", async (req, res) => {
-  res.json({ data: { status: "ok" } });
+routes.get("/users", access, async (req, res) => {
+  res.json({ data: { user: req.user } });
 });
 
 routes.post("/register", registerValidations, auth.createUser);

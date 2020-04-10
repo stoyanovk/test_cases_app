@@ -37,10 +37,9 @@ module.exports.login = async function (req, res) {
     const {
       dataValues: { user_password, ...rest },
     } = candidate;
-    const token = jwt.sign(
-      { user: rest, lifeTime: Date.now() + 60 * 60 * 24 },
-      process.env.JWT_SECRET
-    );
+    const token = jwt.sign({ user: rest }, process.env.JWT_SECRET, {
+      notBefore: "24 h",
+    });
 
     res.json({
       status: "success",
