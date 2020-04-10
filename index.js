@@ -7,14 +7,14 @@ const cors = require("cors");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors({ origin: process.env.RESOLVE_HOST }));
+app.use(cors({ origin: "*" }));
 api(app);
 
 async function start() {
   try {
     await sequelize.sync({ force: false });
-    app.listen(3000, function () {
-      console.log("Example app listening on port 3000!");
+    app.listen(3001, function () {
+      console.log("Example app listening on port 3001!");
     });
   } catch (e) {
     console.log(e);
