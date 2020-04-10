@@ -40,8 +40,8 @@ api(app);
 async function start() {
   try {
     await sequelize.sync({ force: false });
-    app.listen(3000, function () {
-      console.log("Example app listening on port 3000!");
+    app.listen(3001, function () {
+      console.log("Example app listening on port!");
     });
   } catch (e) {
     console.log(e);

@@ -9,10 +9,11 @@ module.exports.createUser = async function(req, res, next) {
   }
   try {
     const candidate = await users.findOne({ where: { email: req.body.email } });
-    console.log(candidate);
+
     if (candidate) {
       return res.status(226).json({ message: "user already exist" });
     }
+    
     const password = await bcrypt.hash(req.body.password, 10);
     await users.create({
       user_name: req.body.user_name,
