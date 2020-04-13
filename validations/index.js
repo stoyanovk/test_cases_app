@@ -1,9 +1,14 @@
 const { body } = require("express-validator");
 
+const loginValidations = [
+  body("email").isEmail(),
+  body("password").isByteLength({ min: 6, max: 30 }),
+];
+
+const resetValidations = [body("email").isEmail()];
+
 const registerValidations = [
-  body("user_name")
-    .isAlpha()
-    .isByteLength({ min: 2 }),
+  body("user_name").isAlpha().isByteLength({ min: 2 }),
   body("email").isEmail(),
   body("password").isByteLength({ min: 6, max: 30 }),
   body("confirm", "password must be equal").custom((value, { req }) => {
@@ -12,6 +17,6 @@ const registerValidations = [
       return false;
     }
     return true;
-  })
+  }),
 ];
-module.exports = { registerValidations };
+module.exports = { registerValidations, loginValidations,resetValidations };

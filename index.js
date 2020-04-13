@@ -7,7 +7,7 @@ const cors = require("cors");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: process.env.RESOLVE_HOST }));
 api(app);
 
 async function start() {
