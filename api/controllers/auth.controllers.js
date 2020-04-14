@@ -2,6 +2,7 @@ const Users = require("../../models/users");
 const nodemailer = require("nodemailer");
 const sgTransport = require("nodemailer-sendgrid-transport");
 const { validationResult } = require("express-validator");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const {
   getRegisterMail,
@@ -65,8 +66,9 @@ module.exports.login = async function (req, res) {
 
 module.exports.reset = async function (req, res) {
   try {
+    console.log(req.body.email);
     const candidate = await Users.findOne({ where: { email: req.body.email } });
-
+    console.log(candidate);
     if (candidate) {
       const token = jwt.sign(
         { email: candidate.email },
@@ -75,10 +77,31 @@ module.exports.reset = async function (req, res) {
           expiresIn: 1800 * 1000,
         }
       );
+      return res.json({ token });
       res.json({ message: "To recover your password, go to the email" });
       await mailer.sendMail(getResetPasswordMail(req.body.email, token));
     }
+
+    return res.json({ message: "user with this email is not exist" });
   } catch (e) {
     console.log(e);
+  }
+};
+
+module.exports.restorePassword = async function (req, res) {
+  try {
+    const decoded = jwt.verify(req.params.token, process.env.JWT_SECRET);
+
+    if (decoded.email) {
+      const password = await bcrypt.hash(req.body.password, 10);
+      await Users.update(
+        { user_password: password },
+        { where: { email: decoded.email } }
+      );
+      res.json({ message: "password was restored" });
+    }
+  } catch (e) {
+    console.log(e);
+    res.json({ errors: "something want wrong" });
   }
 };

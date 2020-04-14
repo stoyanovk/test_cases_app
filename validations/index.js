@@ -19,4 +19,20 @@ const registerValidations = [
     return true;
   }),
 ];
-module.exports = { registerValidations, loginValidations,resetValidations };
+
+const restorePassword = [
+  body("password").isByteLength({ min: 6, max: 30 }),
+  body("confirm", "password must be equal").custom((value, { req }) => {
+    if (value !== req.body.password) {
+      new Error("confirm is not equal password");
+      return false;
+    }
+    return true;
+  }),
+];
+module.exports = {
+  restorePassword,
+  registerValidations,
+  loginValidations,
+  resetValidations,
+};
