@@ -1,17 +1,9 @@
 const { Router } = require("express");
-const auth = require("../controllers/auth.controllers");
-const { registerValidations } = require("../../validations/register");
-const { loginValidations } = require("../../validations/login");
-const access = require("../../middleware/access");
-
+const users = require("../controllers/users.controller");
 const routes = new Router();
 
-routes.get("/users", access, async (req, res) => {
-  res.json({ data: { user: req.user } });
-});
-
-routes.post("/register", registerValidations, auth.createUser);
-
-routes.post("/auth", loginValidations, auth.login);
-
+routes.get("/users", users.getUsers);
+routes.get("/users/:id", users.getUserById);
+routes.put("/users");
+routes.delete("/users");
 module.exports = routes;
