@@ -1,5 +1,8 @@
+const auth = require("./auth");
 const users = require("./users");
+const access = require("../../middleware/access");
 
-module.exports = function(server) {
-  server.use("/api", users);
+module.exports = function (server) {
+  server.use("/api", auth);
+  server.use("/api", access, users);
 };

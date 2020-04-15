@@ -1,4 +1,4 @@
-module.exports.getRegisterMail = function (mail) {
+module.exports.getSuccessRegisterLayout = function (mail) {
   return {
     to: mail,
     from: process.env.MAIL_ADDRESS,
@@ -9,7 +9,7 @@ module.exports.getRegisterMail = function (mail) {
   };
 };
 
-module.exports.getResetPasswordMail = function (mail, token) {
+module.exports.getResetPasswordLayout = function (mail, token) {
   return {
     to: mail,
     from: process.env.MAIL_ADDRESS,

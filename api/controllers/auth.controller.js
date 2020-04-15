@@ -5,8 +5,8 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const {
-  getRegisterMail,
-  getResetPasswordMail,
+  getSuccessRegisterLayout,
+  getResetPasswordLayout,
 } = require("../../helpers/mails");
 const options = {
   auth: {
@@ -32,7 +32,7 @@ module.exports.register = async function (req, res) {
     const user = await Users.createUser(req.body);
 
     res.status(201).json({ status: "success", data: { user } });
-    await mailer.sendMail(getRegisterMail(req.body.email));
+    await mailer.sendMail(getSuccessRegisterLayout(req.body.email));
   } catch (e) {
     console.log(e);
   }
@@ -66,9 +66,7 @@ module.exports.login = async function (req, res) {
 
 module.exports.reset = async function (req, res) {
   try {
-    console.log(req.body.email);
     const candidate = await Users.findOne({ where: { email: req.body.email } });
-    console.log(candidate);
     if (candidate) {
       const token = jwt.sign(
         { email: candidate.email },
@@ -77,9 +75,8 @@ module.exports.reset = async function (req, res) {
           expiresIn: 1800 * 1000,
         }
       );
-      return res.json({ token });
-      res.json({ message: "To recover your password, go to the email" });
-      await mailer.sendMail(getResetPasswordMail(req.body.email, token));
+      await mailer.sendMail(getResetPasswordLayout(req.body.email, token));
+      return res.json({ message: "To recover your password, go to the email" });
     }
 
     return res.json({ message: "user with this email is not exist" });
