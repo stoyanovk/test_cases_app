@@ -1,20 +1,20 @@
 const Users = require("../../models/users");
+const { NotFoundError } = require("../../helpers/errors");
 
-module.exports.getUsers = async function (req, res) {
+module.exports.getUsers = async function (req, res, next) {
   try {
     const users = await Users.findAll();
     res.json({ users });
   } catch (e) {
-    console.log(e);
+    next(new NotFoundError());
   }
 };
 
-module.exports.getUserById = async function (req, res) {
+module.exports.getUserById = async function (req, res, next) {
   try {
-    console.log(typeof req.params.id);
-    // const users = await Users.findByPk();
-    res.json({ ok: "ok" });
+    const user = await Users.findByPk(req.params.id);
+    res.json({ user });
   } catch (e) {
-    console.log(e);
+    next(new NotFoundError());
   }
 };

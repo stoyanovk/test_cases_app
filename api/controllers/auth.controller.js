@@ -4,10 +4,12 @@ const sgTransport = require("nodemailer-sendgrid-transport");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { BaseError, WrongParametersError } = require("../../helpers/errors");
 const {
   getSuccessRegisterLayout,
   getResetPasswordLayout,
 } = require("../../helpers/mails");
+
 const options = {
   auth: {
     api_key: process.env.MAIL_API_KEY,
@@ -16,7 +18,7 @@ const options = {
 
 const mailer = nodemailer.createTransport(sgTransport(options));
 
-module.exports.register = async function (req, res) {
+module.exports.register = async function (req, res, next) {
   try {
     const errors = validationResult(req);
 
@@ -34,11 +36,11 @@ module.exports.register = async function (req, res) {
     res.status(201).json({ status: "success", data: { user } });
     await mailer.sendMail(getSuccessRegisterLayout(req.body.email));
   } catch (e) {
-    console.log(e);
+    next(new BaseError(e));
   }
 };
 
-module.exports.login = async function (req, res) {
+module.exports.login = async function (req, res, next) {
   try {
     const candidate = await Users.findOne({ where: { email: req.body.email } });
 
@@ -60,11 +62,11 @@ module.exports.login = async function (req, res) {
       data: { token, user: rest },
     });
   } catch (e) {
-    console.log(e);
+    next(new BaseError(e));
   }
 };
 
-module.exports.reset = async function (req, res) {
+module.exports.reset = async function (req, res, next) {
   try {
     const candidate = await Users.findOne({ where: { email: req.body.email } });
     if (candidate) {
@@ -81,11 +83,11 @@ module.exports.reset = async function (req, res) {
 
     return res.json({ message: "user with this email is not exist" });
   } catch (e) {
-    console.log(e);
+    next(new BaseError(e));
   }
 };
 
-module.exports.restorePassword = async function (req, res) {
+module.exports.restorePassword = async function (req, res, next) {
   try {
     const decoded = jwt.verify(req.params.token, process.env.JWT_SECRET);
 
@@ -97,8 +99,8 @@ module.exports.restorePassword = async function (req, res) {
       );
       res.json({ message: "password was restored" });
     }
+    next(new WrongParametersError("params is not valid"));
   } catch (e) {
-    console.log(e);
-    res.json({ errors: "something want wrong" });
+    next(new BaseError(e));
   }
 };

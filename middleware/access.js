@@ -1,22 +1,25 @@
 const jwt = require("jsonwebtoken");
-async function access(req, res, next) {
-  try {
-    // if (!req.headers.referer.includes(process.env.RESOLVE_HOST))
-    //   throw new Error("bad host");
+const { BaseError, UnauthorizedError } = require("../helpers/errors");
+const production = process.env.NODE_ENV === "production";
 
-    const token = req.headers["x-access-token"];
-    if (!token) {
-      return res.json({ message: "log in please" });
-    }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (decoded) {
-      req.user = decoded;
-      return next();
-    }
-    return res.json({ message: "log in please" });
-  } catch (e) {
-    console.log(e);
-    res.json({ message: "log in please" });
+function access(req, res, next) {
+  if (!req.headers.referer.includes(process.env.RESOLVE_HOST) && production) {
+    next(new BaseError({ message: "bad request" }));
   }
+
+  const token = req.headers["x-access-token"];
+
+  if (!token) {
+    next(new UnauthorizedError({ message: "login please" }));
+  }
+  
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+  if (decoded) {
+    req.user = decoded;
+    return next();
+  }
+
+  next(new UnauthorizedError({ message: "login please" }));
 }
 module.exports = access;
