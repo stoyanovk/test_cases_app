@@ -1,19 +1,11 @@
-const errors = require("../helpers/errors");
-
+// eslint-disable-next-line no-unused-vars
 function errorMiddleware(err, req, res, next) {
-  let tmpError = err;
-
-  if (!(err instanceof errors.BaseError)) {
-    tmpError = new errors.BaseError({
-      message: err.message,
-    });
-    tmpError.stack = err.stack;
-  }
-
   const result = {
-    code: tmpError.code || 500,
+    code: err.code || 500,
     status: "error",
-    data: tmpError.data,
+    data: {
+      message: err.message || "something wont wrong",
+    },
   };
 
   res.status(result.code).json(result);
