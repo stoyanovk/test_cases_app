@@ -51,7 +51,7 @@ module.exports.login = async function (req, res, next) {
     if (!match) return res.json({ message: "Wrong email or password" });
 
     const {
-      dataValues: { user_password, ...rest },
+      dataValues: { password, ...rest },
     } = candidate;
     const token = jwt.sign({ user: rest }, process.env.JWT_SECRET, {
       expiresIn: 3600 * 24 * 1000,
@@ -66,7 +66,7 @@ module.exports.login = async function (req, res, next) {
   }
 };
 
-module.exports.reset = async function (req, res, next) {
+module.exports.resetPassword = async function (req, res, next) {
   try {
     const candidate = await Users.findOne({ where: { email: req.body.email } });
     if (candidate) {
@@ -93,10 +93,7 @@ module.exports.restorePassword = async function (req, res, next) {
 
     if (decoded.email) {
       const password = await bcrypt.hash(req.body.password, 10);
-      await Users.update(
-        { user_password: password },
-        { where: { email: decoded.email } }
-      );
+      await Users.update({ password }, { where: { email: decoded.email } });
       res.json({ message: "password was restored" });
     }
     next(new WrongParametersError("params is not valid"));

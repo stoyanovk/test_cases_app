@@ -1,5 +1,5 @@
 class BaseError extends Error {
-  constructor(params={}) {
+  constructor(params = {}) {
     super(params.message);
     this.code = 500;
     this.name = this.constructor.name;
@@ -24,7 +24,13 @@ class UnauthorizedError extends BaseError {
     this.message = params.message || "Permission denied";
   }
 }
-
+class BadRequest extends BaseError {
+  constructor(params = {}) {
+    super(params.message);
+    this.code = 400;
+    this.message = params.message || "Permission denied";
+  }
+}
 class ForbiddenError extends BaseError {
   constructor(params = {}) {
     super(params.message);
@@ -56,4 +62,5 @@ module.exports = {
   UnauthorizedError,
   WrongParametersError,
   WrongData,
+  BadRequest,
 };
