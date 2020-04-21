@@ -5,7 +5,8 @@ const {
   loginValidations,
   resetValidations,
   restorePassword,
-} = require("../../validations");
+} = require("../../validations/authValidators");
+
 const routes = new Router();
 
 routes.post("/auth/register", registerValidations, auth.register);

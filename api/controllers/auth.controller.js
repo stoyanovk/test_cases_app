@@ -10,6 +10,8 @@ const {
   getResetPasswordLayout,
 } = require("../../helpers/mails");
 
+const production = process.env.NODE_ENV === "production";
+
 const options = {
   auth: {
     api_key: process.env.MAIL_API_KEY,
@@ -32,9 +34,10 @@ module.exports.register = async function (req, res, next) {
       return res.status(226).json({ message: "user already exist" });
     }
     const user = await Users.createUser(req.body);
-
+    if (production) {
+      await mailer.sendMail(getSuccessRegisterLayout(req.body.email));
+    }
     res.status(201).json({ status: "success", data: { user } });
-    await mailer.sendMail(getSuccessRegisterLayout(req.body.email));
   } catch (e) {
     next(new BaseError(e));
   }
@@ -53,9 +56,9 @@ module.exports.login = async function (req, res, next) {
     const {
       dataValues: { password, ...rest },
     } = candidate;
-    const token = jwt.sign({ user: rest }, process.env.JWT_SECRET, {
-      expiresIn: 3600 * 24 * 1000,
-    });
+
+    const options = production ? { expiresIn: 3600 * 24 * 1000 } : {};
+    const token = jwt.sign({ user: rest }, process.env.JWT_SECRET, options);
 
     res.json({
       status: "success",

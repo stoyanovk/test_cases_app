@@ -1,4 +1,9 @@
+
 class BaseError extends Error {
+  /**
+   * @param  {Object} params
+   * @param  {string} params.message 
+   */
   constructor(params = {}) {
     super(params.message);
     this.code = 500;
@@ -9,9 +14,18 @@ class BaseError extends Error {
   }
 }
 
+
+class UnprocessableEntity extends BaseError {
+  constructor(params = {}) {
+    super(params);
+    this.code = 422;
+    this.message = params.message || "Unprocessable Entity";
+  }
+}
+
 class NotFoundError extends BaseError {
   constructor(params = {}) {
-    super(params.message);
+    super(params);
     this.code = 404;
     this.message = params.message || "Not Found";
   }
@@ -19,21 +33,21 @@ class NotFoundError extends BaseError {
 
 class UnauthorizedError extends BaseError {
   constructor(params = {}) {
-    super(params.message);
+    super(params);
     this.code = 401;
     this.message = params.message || "Permission denied";
   }
 }
 class BadRequest extends BaseError {
   constructor(params = {}) {
-    super(params.message);
+    super(params);
     this.code = 400;
     this.message = params.message || "Permission denied";
   }
 }
 class ForbiddenError extends BaseError {
   constructor(params = {}) {
-    super(params.message);
+    super(params);
     this.code = 403;
     this.message = params.message || "Permission denied";
   }
@@ -41,7 +55,7 @@ class ForbiddenError extends BaseError {
 
 class WrongParametersError extends BaseError {
   constructor(params = {}) {
-    super(params.message);
+    super(params);
     this.code = 400;
     this.message = params.message || "Wrong parameters";
   }
@@ -49,7 +63,7 @@ class WrongParametersError extends BaseError {
 
 class WrongData extends BaseError {
   constructor(params = {}) {
-    super(params.message);
+    super(params);
     this.code = 400;
     this.message = params.message || "Wrong data";
   }
@@ -63,4 +77,5 @@ module.exports = {
   WrongParametersError,
   WrongData,
   BadRequest,
+  UnprocessableEntity,
 };

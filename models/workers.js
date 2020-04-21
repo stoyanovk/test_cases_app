@@ -6,8 +6,18 @@ const Workers = sequelize.define("workers", {
     primaryKey: true,
     allowNull: true,
     autoIncrement: true,
-    type: Sequelize.INTEGER
-  }
+    type: Sequelize.INTEGER,
+  },
 });
+Workers.createWorker = async function (project_id, user_id) {
+  try {
+    Workers.create({
+      project_id,
+      user_id,
+    });
+  } catch (e) {
+    return new Error(e);
+  }
+};
 
 module.exports = Workers;

@@ -1,29 +1,37 @@
 const Users = require("../../models/users");
 const { NotFoundError } = require("../../helpers/errors");
 const bcrypt = require("bcrypt");
+
 module.exports.getUsers = async function (req, res, next) {
   try {
     const users = await Users.findAll();
+    if (users === null) {
+      throw new NotFoundError({ message: "User is not found" });
+    }
     res.json({ users });
   } catch (e) {
-    next(new NotFoundError());
+    next(e);
   }
 };
 
 module.exports.getUserById = async function (req, res, next) {
   try {
     const user = await Users.findByPk(req.params.id);
+    if (user === null) {
+      throw new NotFoundError({ message: "User is not found" });
+    }
     res.json({ user });
   } catch (e) {
-    next(new NotFoundError());
+    next(e);
   }
 };
 module.exports.editUser = async function (req, res, next) {
   try {
     const user = await Users.findByPk(req.params.id);
-    if (!user) {
-      next(new NotFoundError());
+    if (user === null) {
+      throw new NotFoundError({ message: "User is not found" });
     }
+
     const newPassword = await bcrypt.hash(req.body.password, 10);
     await user.update({
       user_name: req.body.user_name,
@@ -31,6 +39,7 @@ module.exports.editUser = async function (req, res, next) {
     });
     const {
       dataValues: {
+        // eslint-disable-next-line no-unused-vars
         password: { pass },
         ...rest
       },
@@ -38,14 +47,17 @@ module.exports.editUser = async function (req, res, next) {
 
     res.json({ user: rest });
   } catch (e) {
-    next(new Error(e));
+    next(e);
   }
 };
 module.exports.deleteUser = async function (req, res, next) {
   try {
-    await Users.destroy({ where: { id: req.params.id } });
+    const isDeleted = await Users.destroy({ where: { id: req.params.id } });
+    if (!isDeleted) {
+      throw new NotFoundError({ message: "User is not found" });
+    }
     res.json({ message: "user deleted successfully" });
   } catch (e) {
-    next(new NotFoundError());
+    next(e);
   }
 };

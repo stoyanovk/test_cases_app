@@ -16,7 +16,7 @@ function access(req, res, next) {
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
   if (decoded) {
-    req.user = decoded;
+    req.user = { ...decoded.user };
     return next();
   }
 
