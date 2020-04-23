@@ -33,7 +33,6 @@ const Users = sequelize.define("user", {
 Users.hasMany(Tasks, { foreignKey: "owner_id" });
 Users.hasMany(Results, { foreignKey: "owner_id" });
 
-
 Users.createUser = async function (body) {
   try {
     const password = await bcrypt.hash(body.password, 10);
@@ -50,7 +49,7 @@ Users.createUser = async function (body) {
     } = user;
     return rest;
   } catch (e) {
-    return new Error(e);
+    throw new Error(e);
   }
 };
 

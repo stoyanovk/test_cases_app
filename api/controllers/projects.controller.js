@@ -8,12 +8,18 @@ module.exports.createProject = async function (req, res, next) {
     const project = await Projects.findOne({
       where: { project_name: req.body.project_name },
     });
-    
+
     if (project) {
-      throw new WrongParametersError({ message: "Project with this name already exist"})
+      throw new WrongParametersError({
+        message: "Project with this name already exist",
+      });
     }
 
-    const createdProject = await Projects.createProject(req.body, req.user);
+    const createdProject = await Projects.create({
+      project_name: req.project_name,
+      description: req.description || "",
+      owner_id: req.user.id,
+    });
 
     return res.json({ project: createdProject });
   } catch (e) {

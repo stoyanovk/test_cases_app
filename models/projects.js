@@ -20,14 +20,6 @@ Projects.belongsToMany(Users, { through: Workers, foreignKey: "project_id" });
 Users.belongsToMany(Projects, { through: Workers, foreignKey: "user_id" });
 Projects.belongsTo(Users, { foreignKey: "owner_id" });
 
-Projects.createProject = async function ({ project_name, description }, user) {
-  return Projects.create({
-    project_name: project_name,
-    description: description || "",
-    owner_id: user.id,
-  });
-};
-
 Projects.getProjects = function (user) {
   if (user.admin) {
     return Projects.findAll();
@@ -46,7 +38,7 @@ Projects.getProjects = function (user) {
 };
 
 Projects.getProjectById = function (user, id) {
-  if (user.admind) {
+  if (user.admin) {
     return Projects.findByPk(id);
   }
 
