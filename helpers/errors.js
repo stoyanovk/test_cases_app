@@ -61,13 +61,7 @@ class WrongParametersError extends BaseError {
   }
 }
 
-class WrongData extends BaseError {
-  constructor(params = {}) {
-    super(params);
-    this.code = 400;
-    this.message = params.message || "Wrong data";
-  }
-}
+
 
 module.exports = {
   BaseError,
@@ -75,7 +69,6 @@ module.exports = {
   ForbiddenError,
   UnauthorizedError,
   WrongParametersError,
-  WrongData,
   BadRequest,
   UnprocessableEntity,
 };

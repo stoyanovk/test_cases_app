@@ -1,17 +1,16 @@
 const Projects = require("../../models/projects");
 const Users = require("../../models/users");
 const Workers = require("../../models/workers");
-const { NotFoundError } = require("../../helpers/errors");
+const { NotFoundError, WrongParametersError } = require("../../helpers/errors");
 
 module.exports.createProject = async function (req, res, next) {
   try {
     const project = await Projects.findOne({
       where: { project_name: req.body.project_name },
     });
+    
     if (project) {
-      return res.json({
-        message: "a project with the same name already exists",
-      });
+      throw new WrongParametersError({ message: "Project with this name already exist"})
     }
 
     const createdProject = await Projects.createProject(req.body, req.user);

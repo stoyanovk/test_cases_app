@@ -4,7 +4,11 @@ const sgTransport = require("nodemailer-sendgrid-transport");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { BaseError, WrongParametersError } = require("../../helpers/errors");
+const {
+  BaseError,
+  WrongParametersError,
+  UnprocessableEntity,
+} = require("../../helpers/errors");
 const {
   getSuccessRegisterLayout,
   getResetPasswordLayout,
@@ -25,13 +29,13 @@ module.exports.register = async function (req, res, next) {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
+      throw new UnprocessableEntity({ message: errors.array()[0].msg });
     }
 
     const candidate = await Users.findOne({ where: { email: req.body.email } });
 
     if (candidate) {
-      return res.status(226).json({ message: "user already exist" });
+      throw new WrongParametersError({ message: "user already exist" });
     }
     const user = await Users.createUser(req.body);
     if (production) {
@@ -39,7 +43,7 @@ module.exports.register = async function (req, res, next) {
     }
     res.status(201).json({ status: "success", data: { user } });
   } catch (e) {
-    next(new BaseError(e));
+    next(e);
   }
 };
 
@@ -47,12 +51,15 @@ module.exports.login = async function (req, res, next) {
   try {
     const candidate = await Users.findOne({ where: { email: req.body.email } });
 
-    if (!candidate) return res.json({ message: "Wrong email or password" });
+    if (!candidate) {
+      throw new WrongParametersError({ message: "Wrong email or password" });
+    }
 
     const match = candidate.validPassword(req.body.password);
 
-    if (!match) return res.json({ message: "Wrong email or password" });
-
+    if (!match) {
+      throw new WrongParametersError({ message: "Wrong email or password" });
+    }
     const {
       dataValues: { password, ...rest },
     } = candidate;
@@ -65,7 +72,7 @@ module.exports.login = async function (req, res, next) {
       data: { token, user: rest },
     });
   } catch (e) {
-    next(new BaseError(e));
+    next(e);
   }
 };
 
@@ -84,9 +91,11 @@ module.exports.resetPassword = async function (req, res, next) {
       return res.json({ message: "To recover your password, go to the email" });
     }
 
-    return res.json({ message: "user with this email is not exist" });
+    throw new WrongParametersError({
+      message: "user with this email is not exist",
+    });
   } catch (e) {
-    next(new BaseError(e));
+    next(e);
   }
 };
 
@@ -101,6 +110,6 @@ module.exports.restorePassword = async function (req, res, next) {
     }
     next(new WrongParametersError("params is not valid"));
   } catch (e) {
-    next(new BaseError(e));
+    next(e);
   }
 };
