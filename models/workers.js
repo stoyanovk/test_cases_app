@@ -11,14 +11,10 @@ const Workers = sequelize.define("workers", {
 });
 
 Workers.createWorker = async function (project_id, user_id) {
-  try {
-    Workers.create({
-      project_id,
-      user_id,
-    });
-  } catch (e) {
-    throw new Error(e);
-  }
+  return Workers.create({
+    project_id,
+    user_id,
+  });
 };
 
 module.exports = Workers;
