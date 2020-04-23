@@ -36,20 +36,41 @@ Projects.createProject = async function ({ project_name, description }, user) {
 // я не уверен что это правильно решение, но я нубас не смог найти правильное в ОРМ
 // Мне надо было получить все проекты в которые доступные юзеруб не только где он создатель
 // но и участник
-Projects.getCurrentUserProjects = async function (user_id) {
+Projects.getProjects = function (user) {
   try {
-    const allProjects = await sequelize.query(
+    if (user.admin) {
+      return Projects.findAll();
+    }
+
+    return sequelize.query(
       `
     SELECT projects.id, projects.project_name, projects.description, projects.owner_id, users.id as user_id
     FROM projects
     INNER JOIN workers ON projects.id = workers.project_id
     INNER JOIN users ON users.id = workers.user_id
-    WHERE user_id = ${user_id} or owner_id=${user_id}
+    WHERE user_id = ${user.id} or owner_id=${user.id}
     `,
       { raw: false, type: Sequelize.QueryTypes.SELECT }
     );
-    const result = allProjects.filter(({ id }) => id !== id);
-    return result;
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+
+Projects.getProjectById = function (user, id) {
+  try {
+    if (user.admind) {
+      return Projects.findByPk(id);
+    }
+
+    return Projects.findOne({
+      where: { id },
+      include: {
+        model: Users,
+        attributes: ["id"],
+        where: { id: user.id },
+      },
+    });
   } catch (e) {
     throw new Error(e);
   }

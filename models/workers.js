@@ -9,6 +9,7 @@ const Workers = sequelize.define("workers", {
     type: Sequelize.INTEGER,
   },
 });
+
 Workers.createWorker = async function (project_id, user_id) {
   try {
     Workers.create({
@@ -16,7 +17,7 @@ Workers.createWorker = async function (project_id, user_id) {
       user_id,
     });
   } catch (e) {
-    return new Error(e);
+    throw new Error(e);
   }
 };
 

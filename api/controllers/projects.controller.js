@@ -15,11 +15,6 @@ module.exports.createProject = async function (req, res, next) {
     }
 
     const createdProject = await Projects.createProject(req.body, req.user);
-    // const createdProject = await Projects.createProject(req.body, { id: 2 });
-
-    const admin = await Users.findOne({ admin: true });
-
-    await Workers.create({ project_id: createdProject.id, user_id: admin.id });
 
     return res.json({ project: createdProject });
   } catch (e) {
@@ -29,10 +24,7 @@ module.exports.createProject = async function (req, res, next) {
 
 module.exports.getProjects = async function (req, res, next) {
   try {
-    // const projects = await Projects.getCurrentUserProjects(req.user.id);
-    const projects = await Projects.findAll({
-      include: { model: Users },
-    });
+    const projects = await Projects.getProjects(req.user);
 
     if (projects === null) {
       throw new NotFoundError({ message: "Projects is not found" });
@@ -43,12 +35,12 @@ module.exports.getProjects = async function (req, res, next) {
   }
 };
 
-module.exports.getProjectsById = async function (req, res, next) {
+module.exports.getProjectById = async function (req, res, next) {
   try {
-    const project = await Projects.findOne({
-      where: { id: req.params.project_id },
-      include: [{ model: Users, attributes: [], where: { id: req.user.id } }],
-    });
+    const project = await Projects.getProjectById(
+      req.user,
+      req.params.project_id
+    );
     if (project === null) {
       throw new NotFoundError({ message: "Project is not found" });
     }
