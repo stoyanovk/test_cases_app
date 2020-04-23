@@ -15,7 +15,7 @@ const Users = sequelize.define("user", {
     type: Sequelize.STRING,
     allowNull: true,
   },
-  user_password: {
+  password: {
     type: Sequelize.STRING,
     allowNull: true,
   },
@@ -38,20 +38,23 @@ Users.createUser = async function (body) {
     const password = await bcrypt.hash(body.password, 10);
     const user = await this.create({
       user_name: body.user_name,
-      user_password: password,
+      password,
       email: body.email.toLowerCase(),
     });
     const {
-      dataValues: { user_password, ...rest },
+      dataValues: {
+        password: { pass },
+        ...rest
+      },
     } = user;
     return rest;
   } catch (e) {
-    console.log(e);
+    throw new Error(e);
   }
 };
 
 Users.prototype.validPassword = function (password) {
-  return bcrypt.compare(password, this.user_password);
+  return bcrypt.compare(password, this.password);
 };
 
 module.exports = Users;

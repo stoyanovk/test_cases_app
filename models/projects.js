@@ -9,15 +9,46 @@ const Projects = sequelize.define("projects", {
     primaryKey: true,
     allowNull: true,
     autoIncrement: true,
-    type: Sequelize.INTEGER
+    type: Sequelize.INTEGER,
   },
   project_name: Sequelize.STRING,
-  description: Sequelize.TEXT
+  description: Sequelize.TEXT,
 });
 
-Projects.belongsTo(Users, { foreignKey: "owner_id" });
 Projects.hasMany(Tasks, { foreignKey: "project_id" });
 Projects.belongsToMany(Users, { through: Workers, foreignKey: "project_id" });
 Users.belongsToMany(Projects, { through: Workers, foreignKey: "user_id" });
+Projects.belongsTo(Users, { foreignKey: "owner_id" });
 
+Projects.getProjects = function (user) {
+  if (user.admin) {
+    return Projects.findAll();
+  }
+
+  return sequelize.query(
+    `
+    SELECT projects.id, projects.project_name, projects.description, projects.owner_id, users.id as user_id
+    FROM projects
+    INNER JOIN workers ON projects.id = workers.project_id
+    INNER JOIN users ON users.id = workers.user_id
+    WHERE user_id = ${user.id} or owner_id=${user.id}
+    `,
+    { raw: false, type: Sequelize.QueryTypes.SELECT }
+  );
+};
+
+Projects.getProjectById = function (user, id) {
+  if (user.admin) {
+    return Projects.findByPk(id);
+  }
+
+  return Projects.findOne({
+    where: { id },
+    include: {
+      model: Users,
+      attributes: ["id"],
+      where: { id: user.id },
+    },
+  });
+};
 module.exports = Projects;

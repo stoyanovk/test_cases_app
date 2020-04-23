@@ -5,14 +5,15 @@ const {
   loginValidations,
   resetValidations,
   restorePassword,
-} = require("../../validations");
+} = require("../../validations/authValidators");
+
 const routes = new Router();
 
 routes.post("/auth/register", registerValidations, auth.register);
 
 routes.post("/auth/login", loginValidations, auth.login);
 
-routes.post("/auth/reset-password", resetValidations, auth.reset);
+routes.post("/auth/reset-password", resetValidations, auth.resetPassword);
 
 routes.put(
   "/auth/reset-password/:token",
