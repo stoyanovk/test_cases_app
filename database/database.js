@@ -13,4 +13,4 @@ const sequelize = new Sequelize(
 );
 module.exports = sequelize;
 
-// Option 2: Passing a connection URI
+
