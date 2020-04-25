@@ -1,6 +1,6 @@
-const Projects = require("../../models/projects");
-const Users = require("../../models/users");
-const Workers = require("../../models/workers");
+const Projects = require("../../database/models/projects");
+const Users = require("../../database/models/users");
+const Workers = require("../../database/models/workers");
 const { NotFoundError, WrongParametersError } = require("../../helpers/errors");
 
 module.exports.createProject = async function (req, res, next) {
@@ -16,8 +16,8 @@ module.exports.createProject = async function (req, res, next) {
     }
 
     const createdProject = await Projects.create({
-      project_name: req.project_name,
-      description: req.description || "",
+      project_name: req.body.project_name,
+      description: req.body.description || "",
       owner_id: req.user.id,
     });
 

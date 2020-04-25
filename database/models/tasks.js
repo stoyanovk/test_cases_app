@@ -8,12 +8,13 @@ const Tasks = sequelize.define("tasks", {
     primaryKey: true,
     type: Sequelize.INTEGER,
     allowNull: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
-  task_name: Sequelize.STRING
+  task_name: Sequelize.STRING,
+  description: Sequelize.TEXT,
 });
 
-Tasks.hasMany(Tasks, { foreignKey: "task_id" });
+Tasks.hasMany(Tasks, { as: 'sub_task', foreignKey: "task_id" });
 Tasks.hasMany(Results, { foreignKey: "task_id" });
 Tasks.hasMany(Comments, { foreignKey: "task_id" });
 module.exports = Tasks;

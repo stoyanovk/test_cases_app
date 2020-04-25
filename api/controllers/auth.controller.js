@@ -1,11 +1,10 @@
-const Users = require("../../models/users");
+const Users = require("../../database/models/users");
 const nodemailer = require("nodemailer");
 const sgTransport = require("nodemailer-sendgrid-transport");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const {
-  BaseError,
   WrongParametersError,
   UnprocessableEntity,
 } = require("../../helpers/errors");
