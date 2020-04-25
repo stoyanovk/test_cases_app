@@ -16,8 +16,8 @@ module.exports.createProject = async function (req, res, next) {
     }
 
     const createdProject = await Projects.create({
-      project_name: req.project_name,
-      description: req.description || "",
+      project_name: req.body.project_name,
+      description: req.body.description || "",
       owner_id: req.user.id,
     });
 

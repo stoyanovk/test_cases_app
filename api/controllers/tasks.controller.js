@@ -1,94 +1,96 @@
-// const Projects = require("../../models/projects");
-// const Users = require("../../models/users");
-// const Workers = require("../../models/workers");
+const { Op } = require("sequelize");
+const Projects = require("../../database/models/projects");
+const Tasks = require("../../database/models/tasks");
 const { NotFoundError, WrongParametersError } = require("../../helpers/errors");
 
-// module.exports.createTask = async function (req, res, next) {
-//   try {
-//     const project = await Projects.findOne({
-//       where: { project_name: req.body.project_name },
-//     });
+module.exports.createTask = async function (req, res, next) {
+  try {
+    const project = await Projects.findByPk(req.query.project_id);
+    if (!project) {
+      throw new WrongParametersError();
+    }
+    const createdTask = await Tasks.create({
+      task_name: req.body.task_name,
+      description: req.body.description || "",
+      owner_id: req.user.id,
+      task_id: req.query.task_id || null,
+      project_id: req.query.project_id,
+    });
 
-//     if (project) {
-//       throw new WrongParametersError({
-//         message: "Project with this name already exist",
-//       });
-//     }
+    return res.json({ task: createdTask });
+  } catch (e) {
+    next(e);
+  }
+};
 
-//     const createdProject = await Projects.create({
-//       project_name: req.project_name,
-//       description: req.description || "",
-//       owner_id: req.user.id,
-//     });
+module.exports.getTasks = async function (req, res, next) {
+  try {
+    if (!req.query.project_id) {
+      throw new WrongParametersError();
+    }
 
-//     return res.json({ project: createdProject });
-//   } catch (e) {
-//     next(e);
-//   }
-// };
+    const tasks = await Tasks.findAll({
+      where: { project_id: req.query.project_id, task_id: null },
+      include: {
+        model: Tasks,
+        as: "sub_task",
+      },
+    });
 
-// module.exports.getProjects = async function (req, res, next) {
-//   try {
-//     const projects = await Projects.getProjects(req.user);
+    return res.json({ tasks });
+  } catch (e) {
+    next(e);
+  }
+};
 
-//     if (projects === null) {
-//       throw new NotFoundError({ message: "Projects is not found" });
-//     }
-//     return res.json({ projects });
-//   } catch (e) {
-//     next(e);
-//   }
-// };
+module.exports.getTaskById = async function (req, res, next) {
+  console.log(req.params.task_id);
+  try {
+    const task = await Tasks.findOne({
+      where: {
+        id: req.params.task_id,
+      },
+      include: { model: Tasks, as: "sub_task" },
+    });
+    if (task === null) {
+      throw new NotFoundError({ message: "Task is not found" });
+    }
+    return res.json({ task });
+  } catch (e) {
+    next(e);
+  }
+};
 
-// module.exports.getProjectById = async function (req, res, next) {
-//   try {
-//     const project = await Projects.getProjectById(
-//       req.user,
-//       req.params.project_id
-//     );
-//     if (project === null) {
-//       throw new NotFoundError({ message: "Project is not found" });
-//     }
-//     return res.json({ project });
-//   } catch (e) {
-//     next(e);
-//   }
-// };
+module.exports.editTask = async function (req, res, next) {
+  try {
+    const task = await Tasks.findByPk(req.params.task_id);
 
-// module.exports.editProject = async function (req, res, next) {
-//   try {
-//     const project = await Projects.findOne({
-//       where: { id: req.params.project_id },
-//       include: [{ model: Users, attributes: [], where: { id: req.user.id } }],
-//     });
-//     if (project === null) {
-//       throw new NotFoundError({ message: "Project is not found" });
-//     }
-//     await project.update({
-//       project_name: req.body.project_name,
-//       description: req.body.description,
-//     });
+    if (task === null) {
+      throw new NotFoundError({ message: "Task is not found" });
+    }
+    await task.update({
+      project_name: req.body.task_name || task.task_name,
+      description: req.body.description || task.description,
+    });
 
-//     return res.json({ project });
-//   } catch (e) {
-//     next(e);
-//   }
-// };
+    return res.json({ task });
+  } catch (e) {
+    next(e);
+  }
+};
 
-// module.exports.deleteProject = async function (req, res, next) {
-//   try {
-//     const projectIsDeleted = await Projects.destroy({
-//       where: { id: req.params.id },
-//     });
-//     if (!projectIsDeleted) {
-//       throw new NotFoundError({ message: "Project is not found" });
-//     }
-//     await Workers.destroy({
-//       where: { project_id: req.params.id },
-//     });
-
-//     res.json({ message: "Project deleted successfully" });
-//   } catch (e) {
-//     next(e);
-//   }
-// };
+module.exports.deleteTask = async function (req, res, next) {
+  try {
+    const taskIsDeleted = await Tasks.destroy({
+      where: {
+        [Op.or]: [{ id: req.params.task_id }, { task_id: req.params.task_id }],
+      },
+    });
+    if (!taskIsDeleted) {
+      throw new NotFoundError({ message: "Task is not found" });
+    }
+    res.json({ message: "Task deleted successfully" });
+  } catch (e) {
+    next(e);
+  }
+};

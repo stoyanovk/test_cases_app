@@ -14,7 +14,7 @@ const Tasks = sequelize.define("tasks", {
   description: Sequelize.TEXT,
 });
 
-Tasks.hasMany(Tasks, { foreignKey: "task_id" });
+Tasks.hasMany(Tasks, { as: 'sub_task', foreignKey: "task_id" });
 Tasks.hasMany(Results, { foreignKey: "task_id" });
 Tasks.hasMany(Comments, { foreignKey: "task_id" });
 module.exports = Tasks;
