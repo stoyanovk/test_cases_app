@@ -6,20 +6,24 @@ const { NotFoundError, WrongParametersError } = require("../../helpers/errors");
 
 module.exports.createComment = async function (req, res, next) {
   try {
-    let commentOwner;
+    //Название следует сменить
+    let commentOwner = null;
+    console.log(req.params);
     if (req.params.result_id) {
-      commentOwner = await Results.findByPk(req.query.result_id);
+      commentOwner = await Results.findByPk(req.params.result_id);
     }
     if (req.params.task_id) {
-      commentOwner = await Results.findByPk(req.query.result_id);
+      commentOwner = await Tasks.findByPk(req.params.task_id);
     }
     if (!commentOwner) {
       throw new WrongParametersError();
     }
+
     const createdComments = await Comments.create({
       description: req.body.description || "",
-      task_id: req.query.task_id || null,
-      result_id: req.query.result_id || null,
+      task_id: req.params.task_id || null,
+      result_id: req.params.result_id || null,
+      owner_id: req.user.id,
     });
 
     return res.json({ comment: createdComments });
@@ -28,73 +32,64 @@ module.exports.createComment = async function (req, res, next) {
   }
 };
 
-module.exports.getTasks = async function (req, res, next) {
+module.exports.getComments = async function (req, res, next) {
   try {
-    if (!req.query.project_id) {
+    console.log(req.params);
+
+    if (!req.params.task_id) {
       throw new WrongParametersError();
     }
 
-    const tasks = await Tasks.findAll({
-      where: { project_id: req.query.project_id, task_id: null },
-      include: {
-        model: Tasks,
-        as: "sub_task",
-      },
+    const comments = await Comments.findAll({
+      where: { task_id: req.params.task_id },
     });
 
-    return res.json({ tasks });
+    return res.json({ comments });
   } catch (e) {
     next(e);
   }
 };
 
-module.exports.getTaskById = async function (req, res, next) {
-  console.log(req.params.task_id);
+module.exports.getCommentById = async function (req, res, next) {
   try {
-    const task = await Tasks.findOne({
+    const comment = await Comments.findByPk(req.params.comment_id);
+    if (comment === null) {
+      throw new NotFoundError({ message: "Comment is not found" });
+    }
+    return res.json({ comment });
+  } catch (e) {
+    next(e);
+  }
+};
+
+module.exports.editComment = async function (req, res, next) {
+  try {
+    const comment = await Comments.findByPk(req.params.comment_id);
+
+    if (comment === null) {
+      throw new NotFoundError({ message: "comment is not found" });
+    }
+    await comment.update({
+      description: req.body.description || "",
+    });
+
+    return res.json({ comment });
+  } catch (e) {
+    next(e);
+  }
+};
+
+module.exports.deleteComment = async function (req, res, next) {
+  try {
+    const commentIsDeleted = await Comments.destroy({
       where: {
-        id: req.params.task_id,
-      },
-      include: { model: Tasks, as: "sub_task" },
-    });
-    if (task === null) {
-      throw new NotFoundError({ message: "Task is not found" });
-    }
-    return res.json({ task });
-  } catch (e) {
-    next(e);
-  }
-};
-
-module.exports.editTask = async function (req, res, next) {
-  try {
-    const task = await Tasks.findByPk(req.params.task_id);
-
-    if (task === null) {
-      throw new NotFoundError({ message: "Task is not found" });
-    }
-    await task.update({
-      project_name: req.body.task_name || task.task_name,
-      description: req.body.description || task.description,
-    });
-
-    return res.json({ task });
-  } catch (e) {
-    next(e);
-  }
-};
-
-module.exports.deleteTask = async function (req, res, next) {
-  try {
-    const taskIsDeleted = await Tasks.destroy({
-      where: {
-        [Op.or]: [{ id: req.params.task_id }, { task_id: req.params.task_id }],
+        id: req.params.comment_id,
       },
     });
-    if (!taskIsDeleted) {
-      throw new NotFoundError({ message: "Task is not found" });
+    if (!commentIsDeleted) {
+      throw new NotFoundError({ message: "Comment is not found" });
     }
-    res.json({ message: "Task deleted successfully" });
+    res.json({ message: "Comment deleted successfully" });
   } catch (e) {
     next(e);
   }

@@ -2,11 +2,12 @@ const { Router } = require("express");
 const comments = require("../controllers/comments.controller");
 const routes = new Router();
 
-routes.post("/comments/:result_id", comments.createComment);
-routes.post("/comments/:task_id", comments.createComment);
-// routes.get("/tasks", tasks.getTasks);
-// routes.get("/tasks/:task_id", tasks.getTaskById);
-// routes.put("/tasks/:task_id", tasks.editTask);
-// routes.delete("/tasks/:task_id", tasks.deleteTask);
+routes.post("/tasks/:task_id/comments", comments.createComment);
+routes.post("/results/:result_id/comments", comments.createComment);
+routes.get("/tasks/:task_id/comments", comments.getComments);
+routes.get("/results/:result_id/comments", comments.getComments);
+routes.get("/comments/:comment_id", comments.getCommentById);
+routes.put("/comments/:comment_id", comments.editComment);
+routes.delete("/comments/:comment_id", comments.deleteComment);
 
 module.exports = routes;

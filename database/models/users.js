@@ -2,6 +2,7 @@ const Sequelize = require("sequelize");
 const sequelize = require("../database");
 const Tasks = require("./tasks");
 const Results = require("./results");
+const Comments = require("./comments");
 const bcrypt = require("bcrypt");
 
 const Users = sequelize.define("user", {
@@ -32,6 +33,7 @@ const Users = sequelize.define("user", {
 
 Users.hasMany(Tasks, { foreignKey: "owner_id" });
 Users.hasMany(Results, { foreignKey: "owner_id" });
+Users.hasMany(Comments, { foreignKey: "owner_id" });
 
 Users.createUser = async function (body) {
   try {
