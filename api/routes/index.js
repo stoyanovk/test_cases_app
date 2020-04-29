@@ -2,6 +2,7 @@ const auth = require("./auth");
 const users = require("./users");
 const projects = require("./projects");
 const tasks = require("./tasks");
+const comments = require("./comments");
 const access = require("../../middleware/access");
 
 module.exports = function (server) {
@@ -9,4 +10,5 @@ module.exports = function (server) {
   server.use("/api", access, users);
   server.use("/api", access, projects);
   server.use("/api", access, tasks);
+  server.use("/api", access, comments);
 };

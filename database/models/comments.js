@@ -9,7 +9,7 @@ const Comments = sequelize.define("comments", {
     type: Sequelize.INTEGER,
   },
   description: Sequelize.STRING,
-  date: Sequelize.DATE,
 });
+
 
 module.exports = Comments;
