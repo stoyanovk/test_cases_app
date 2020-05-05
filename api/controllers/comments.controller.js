@@ -1,4 +1,3 @@
-const { Op } = require("sequelize");
 const Tasks = require("../../database/models/tasks");
 const Results = require("../../database/models/results");
 const Comments = require("../../database/models/comments");
@@ -8,7 +7,6 @@ module.exports.createComment = async function (req, res, next) {
   try {
     //Название следует сменить
     let commentOwner = null;
-    console.log(req.params);
     if (req.params.result_id) {
       commentOwner = await Results.findByPk(req.params.result_id);
     }

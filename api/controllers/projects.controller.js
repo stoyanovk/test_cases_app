@@ -29,7 +29,15 @@ module.exports.createProject = async function (req, res, next) {
 
 module.exports.getProjects = async function (req, res, next) {
   try {
-    const projects = await Projects.getProjects(req.user);
+    let projects = null;
+    if (req.query.project_name) {
+      projects = await Projects.getProjectsBySubstring(
+        req.user,
+        req.query.project_name
+      );
+    } else {
+      projects = await Projects.getProjects(req.user);
+    }
 
     if (projects === null) {
       throw new NotFoundError({ message: "Projects is not found" });
