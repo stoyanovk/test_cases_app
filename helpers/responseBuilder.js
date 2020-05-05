@@ -1,7 +1,7 @@
 class ResponseBuilder {
-  constructor({ code = 200, data }) {
+  constructor({ code = 200, status = "success", data }) {
     this.code = code;
-    this.status = "success";
+    this.status = status;
     this.data = data;
   }
 }

@@ -1,17 +1,25 @@
 const { BaseError } = require("../helpers/errors");
+const ResponseBuilder = require("../helpers/responseBuilder");
 // eslint-disable-next-line no-unused-vars
 function errorMiddleware(err, req, res, next) {
   if (err instanceof BaseError) {
-    const result = {
-      code: err.code || 500,
-      status: "error",
-      data: {
-        message: err.message || "something wont wrong",
-      },
-    };
-    return res.status(result.code).json(result);
+    return res.json(
+      new ResponseBuilder({
+        code: err.code || 500,
+        status: "error",
+        data: { message: err.message || "something wont wrong" },
+      })
+    );
   }
+  
   console.error(err);
-  return res.status(500).json({ message: "server error" });
+
+  return res.json(
+    new ResponseBuilder({
+      code: 500,
+      status: "error",
+      data: { message: "server error" },
+    })
+  );
 }
 module.exports = errorMiddleware;
