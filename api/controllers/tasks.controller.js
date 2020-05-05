@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const Projects = require("../../database/models/projects");
 const Tasks = require("../../database/models/tasks");
 const { NotFoundError, WrongParametersError } = require("../../helpers/errors");
+const ResponseBuilder = require("../../helpers/responseBuilder");
 
 module.exports.createTask = async function (req, res, next) {
   try {
@@ -17,7 +18,12 @@ module.exports.createTask = async function (req, res, next) {
       project_id: req.query.project_id,
     });
 
-    return res.json({ task: createdTask });
+    return res.json(
+      new ResponseBuilder({
+        code: 201,
+        data: { token: req.token, task: createdTask },
+      })
+    );
   } catch (e) {
     next(e);
   }
@@ -37,7 +43,7 @@ module.exports.getTasks = async function (req, res, next) {
       },
     });
 
-    return res.json({ tasks });
+    return res.json(new ResponseBuilder({ data: { token: req.token, tasks } }));
   } catch (e) {
     next(e);
   }
@@ -55,7 +61,7 @@ module.exports.getTaskById = async function (req, res, next) {
     if (task === null) {
       throw new NotFoundError({ message: "Task is not found" });
     }
-    return res.json({ task });
+    return res.json(new ResponseBuilder({ data: { token: req.token, task } }));
   } catch (e) {
     next(e);
   }
@@ -73,7 +79,7 @@ module.exports.editTask = async function (req, res, next) {
       description: req.body.description || task.description,
     });
 
-    return res.json({ task });
+    return res.json(new ResponseBuilder({ data: { token: req.token, task } }));
   } catch (e) {
     next(e);
   }
@@ -89,7 +95,11 @@ module.exports.deleteTask = async function (req, res, next) {
     if (!taskIsDeleted) {
       throw new NotFoundError({ message: "Task is not found" });
     }
-    res.json({ message: "Task deleted successfully" });
+    return res.json(
+      new ResponseBuilder({
+        data: { token: req.token, message: "Task deleted successfully" },
+      })
+    );
   } catch (e) {
     next(e);
   }

@@ -4,10 +4,13 @@ const sgTransport = require("nodemailer-sendgrid-transport");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const ResponseBuilder = require("../../helpers/responseBuilder");
+
 const {
   WrongParametersError,
   UnprocessableEntity,
 } = require("../../helpers/errors");
+
 const {
   getSuccessRegisterLayout,
   getResetPasswordLayout,
@@ -40,7 +43,7 @@ module.exports.register = async function (req, res, next) {
     if (production) {
       await mailer.sendMail(getSuccessRegisterLayout(req.body.email));
     }
-    res.status(201).json({ status: "success", data: { user } });
+    res.json(new ResponseBuilder({ code: 201, data: { user } }));
   } catch (e) {
     next(e);
   }
@@ -66,10 +69,7 @@ module.exports.login = async function (req, res, next) {
     const options = production ? { expiresIn: 3600 * 24 * 1000 } : {};
     const token = jwt.sign({ user: rest }, process.env.JWT_SECRET, options);
 
-    res.json({
-      status: "success",
-      data: { token, user: rest },
-    });
+    res.json(new ResponseBuilder({ data: { token, user: rest } }));
   } catch (e) {
     next(e);
   }
@@ -87,7 +87,11 @@ module.exports.resetPassword = async function (req, res, next) {
         }
       );
       await mailer.sendMail(getResetPasswordLayout(req.body.email, token));
-      return res.json({ message: "To recover your password, go to the email" });
+      return res.json(
+        new ResponseBuilder({
+          data: { message: "To recover your password, go to the email" },
+        })
+      );
     }
 
     throw new WrongParametersError({
@@ -105,9 +109,13 @@ module.exports.restorePassword = async function (req, res, next) {
     if (decoded.email) {
       const password = await bcrypt.hash(req.body.password, 10);
       await Users.update({ password }, { where: { email: decoded.email } });
-      res.json({ message: "password was restored" });
+      return res.json(
+        new ResponseBuilder({
+          data: { message: "password was restored" },
+        })
+      );
     }
-    next(new WrongParametersError("params is not valid"));
+    throw new WrongParametersError("params is not valid");
   } catch (e) {
     next(e);
   }
