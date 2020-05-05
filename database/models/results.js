@@ -7,10 +7,9 @@ const Results = sequelize.define("results", {
     allowNull: true,
     type: Sequelize.INTEGER,
     autoIncrement: true,
-    primaryKey: true
+    primaryKey: true,
   },
-  result: Sequelize.STRING,
-  date: Sequelize.DATE
+  result: Sequelize.BOOLEAN,
 });
 Results.hasMany(Comments, { foreignKey: "result_id" });
 module.exports = Results;

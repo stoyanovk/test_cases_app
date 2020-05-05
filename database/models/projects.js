@@ -31,7 +31,27 @@ Projects.getProjects = function (user) {
     FROM projects
     INNER JOIN workers ON projects.id = workers.project_id
     INNER JOIN users ON users.id = workers.user_id
-    WHERE user_id = ${user.id} or owner_id=${user.id}
+    WHERE user_id = ${user.id} OR owner_id = ${user.id}
+    `,
+    { raw: false, type: Sequelize.QueryTypes.SELECT }
+  );
+};
+
+Projects.getProjectsBySubstring = async function (user, substring) {
+  if (user.admin) {
+    return Projects.findAll({
+      where: {
+        project_name: { [Sequelize.Op.substring]: substring },
+      },
+    });
+  }
+  return sequelize.query(
+    `
+    SELECT projects.id, projects.project_name, projects.description, projects.owner_id, users.id as user_id
+    FROM projects
+    INNER JOIN workers ON projects.id = workers.project_id
+    INNER JOIN users ON users.id = workers.user_id
+    WHERE user_id = ${user.id} AND project_name LIKE '%${substring}%' OR owner_id = ${user.id} AND project_name LIKE '%${substring}%'
     `,
     { raw: false, type: Sequelize.QueryTypes.SELECT }
   );
