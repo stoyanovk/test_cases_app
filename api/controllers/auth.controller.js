@@ -63,6 +63,7 @@ module.exports.login = async function (req, res, next) {
       throw new WrongParametersError({ message: "Wrong email or password" });
     }
     const {
+      // eslint-disable-next-line no-unused-vars
       dataValues: { password, ...rest },
     } = candidate;
 

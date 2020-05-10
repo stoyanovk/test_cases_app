@@ -59,5 +59,5 @@ Users.prototype.validPassword = function (password) {
   return bcrypt.compare(password, this.password);
 };
 
-Users.getUserProjects = function () {};
+
 module.exports = Users;
