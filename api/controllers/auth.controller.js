@@ -39,11 +39,11 @@ module.exports.register = async function (req, res, next) {
     if (candidate) {
       throw new WrongParametersError({ message: "user already exist" });
     }
-    const user = await Users.createUser(req.body);
+    await Users.createUser(req.body);
     if (production) {
       await mailer.sendMail(getSuccessRegisterLayout(req.body.email));
     }
-    res.json(new ResponseBuilder({ code: 201, data: { user } }));
+    res.json(new ResponseBuilder({ code: 201, data: { message: "user successfully registered" } }));
   } catch (e) {
     next(e);
   }
