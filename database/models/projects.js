@@ -20,7 +20,7 @@ Projects.belongsToMany(Users, { through: Workers, foreignKey: "project_id" });
 Users.belongsToMany(Projects, { through: Workers, foreignKey: "user_id" });
 Projects.belongsTo(Users, { foreignKey: "owner_id" });
 
-Projects.getProjects = function (user) {
+Projects.getUserProjects = function (user) {
   if (user.admin) {
     return Projects.findAll();
   }
@@ -33,11 +33,11 @@ Projects.getProjects = function (user) {
     INNER JOIN users ON users.id = workers.user_id
     WHERE user_id = ${user.id} OR owner_id = ${user.id}
     `,
-    { raw: false, type: Sequelize.QueryTypes.SELECT }
+    { bind: ["active"], raw: false, type: Sequelize.QueryTypes.SELECT }
   );
 };
 
-Projects.getProjectsBySubstring = async function (user, substring) {
+Projects.getUserProjectsBySubstring = async function (user, substring) {
   if (user.admin) {
     return Projects.findAll({
       where: {
@@ -53,7 +53,7 @@ Projects.getProjectsBySubstring = async function (user, substring) {
     INNER JOIN users ON users.id = workers.user_id
     WHERE user_id = ${user.id} AND project_name LIKE '%${substring}%' OR owner_id = ${user.id} AND project_name LIKE '%${substring}%'
     `,
-    { raw: false, type: Sequelize.QueryTypes.SELECT }
+    { bind: ["active"], raw: false, type: Sequelize.QueryTypes.SELECT }
   );
 };
 

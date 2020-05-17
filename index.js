@@ -5,11 +5,6 @@ const sequelize = require("./database/database");
 const api = require("./api/routes");
 const cors = require("cors");
 const errorMiddleware = require("./middleware/errors");
-// const Comments = require("./models/comments");
-// const Projects = require("./models/projects");
-// const Results = require("./models/results");
-// const Tasks = require("./models/tasks");
-// const Workers = require("./models/workers");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

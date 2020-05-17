@@ -38,18 +38,11 @@ Users.hasMany(Comments, { foreignKey: "owner_id" });
 Users.createUser = async function (body) {
   try {
     const password = await bcrypt.hash(body.password, 10);
-    const user = await this.create({
+    await this.create({
       user_name: body.user_name,
       password,
       email: body.email.toLowerCase(),
     });
-    const {
-      dataValues: {
-        password: { pass },
-        ...rest
-      },
-    } = user;
-    return rest;
   } catch (e) {
     throw new Error(e);
   }
@@ -59,5 +52,4 @@ Users.prototype.validPassword = function (password) {
   return bcrypt.compare(password, this.password);
 };
 
-Users.getUserProjects = function () {};
 module.exports = Users;
