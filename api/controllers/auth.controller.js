@@ -43,7 +43,12 @@ module.exports.register = async function (req, res, next) {
     if (production) {
       await mailer.sendMail(getSuccessRegisterLayout(req.body.email));
     }
-    res.json(new ResponseBuilder({ code: 201, data: { message: "user successfully registered" } }));
+    res.json(
+      new ResponseBuilder({
+        code: 201,
+        data: { message: "user successfully registered" },
+      })
+    );
   } catch (e) {
     next(e);
   }
@@ -52,12 +57,12 @@ module.exports.register = async function (req, res, next) {
 module.exports.login = async function (req, res, next) {
   try {
     const candidate = await Users.findOne({ where: { email: req.body.email } });
-
+    console.log(candidate);
     if (!candidate) {
       throw new WrongParametersError({ message: "Wrong email or password" });
     }
 
-    const match = candidate.validPassword(req.body.password);
+    const match = await candidate.validPassword(req.body.password);
 
     if (!match) {
       throw new WrongParametersError({ message: "Wrong email or password" });
