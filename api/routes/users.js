@@ -4,6 +4,7 @@ const routes = new Router();
 const { editUserValidator } = require("../../validations/usersValidators");
 const checkAdmin = require("../../middleware/checkAdmin");
 
+routes.get("/users/me", users.getLoginUser);
 routes.get("/users", checkAdmin, users.getUsers);
 routes.get("/users/:id", users.getUserById);
 routes.put("/users/:id", editUserValidator, users.editUser);

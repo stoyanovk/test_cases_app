@@ -12,7 +12,6 @@ const {
 } = require("../../helpers/errors");
 
 const {
-  getSuccessRegisterLayout,
   getResetPasswordLayout,
   getConfirmRegisterLayout,
 } = require("../../helpers/mails");
