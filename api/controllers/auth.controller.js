@@ -14,6 +14,7 @@ const {
 const {
   getSuccessRegisterLayout,
   getResetPasswordLayout,
+  getConfirmRegisterLayout,
 } = require("../../helpers/mails");
 
 const production = process.env.NODE_ENV === "production";
@@ -39,9 +40,36 @@ module.exports.register = async function (req, res, next) {
     if (candidate) {
       throw new WrongParametersError({ message: "user already exist" });
     }
-    await Users.createUser(req.body);
-    if (production) {
-      await mailer.sendMail(getSuccessRegisterLayout(req.body.email));
+    const token = jwt.sign({ body: req.body }, process.env.JWT_SECRET, {
+      expiresIn: 3600 * 30 * 1000,
+    });
+
+    await mailer.sendMail(getConfirmRegisterLayout(req.body.email, token));
+
+    res.json(
+      new ResponseBuilder({
+        code: 201,
+        data: {
+          message:
+            "To continue registration, go to the specified mailing address in next 30 min",
+        },
+      })
+    );
+  } catch (e) {
+    next(e);
+  }
+};
+module.exports.confirm = async function (req, res, next) {
+  try {
+    const { body } = jwt.verify(req.params.token, process.env.JWT_SECRET);
+
+    if (!body) {
+      throw new WrongParametersError({ message: "Wrong data" });
+    }
+    const user = await Users.createUser(body);
+
+    if (!user) {
+      throw new WrongParametersError({ message: "Wrong data" });
     }
     res.json(
       new ResponseBuilder({
@@ -57,7 +85,7 @@ module.exports.register = async function (req, res, next) {
 module.exports.login = async function (req, res, next) {
   try {
     const candidate = await Users.findOne({ where: { email: req.body.email } });
-    console.log(candidate);
+
     if (!candidate) {
       throw new WrongParametersError({ message: "Wrong email or password" });
     }
@@ -72,7 +100,7 @@ module.exports.login = async function (req, res, next) {
       dataValues: { password, ...rest },
     } = candidate;
 
-    const options = production ? { expiresIn: 3600 * 24 * 1000 } : {};
+    const options = production ? { expiresIn: 3600 * 30 * 1000 } : {};
     const token = jwt.sign({ user: rest }, process.env.JWT_SECRET, options);
 
     res.json(new ResponseBuilder({ data: { token, user: rest } }));
