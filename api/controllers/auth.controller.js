@@ -65,6 +65,12 @@ module.exports.confirm = async function (req, res, next) {
     if (!body) {
       throw new WrongParametersError({ message: "Wrong data" });
     }
+    const candidate = await Users.findOne({ where: { email: body.email } });
+
+    if (candidate) {
+      throw new WrongParametersError({ message: "user already exist" });
+    }
+    
     const user = await Users.createUser(body);
 
     if (!user) {
