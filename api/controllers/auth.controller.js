@@ -70,7 +70,7 @@ module.exports.confirm = async function (req, res, next) {
     if (candidate) {
       throw new WrongParametersError({ message: "user already exist" });
     }
-    
+
     const user = await Users.createUser(body);
 
     if (!user) {
@@ -105,7 +105,7 @@ module.exports.login = async function (req, res, next) {
       dataValues: { password, ...rest },
     } = candidate;
 
-    const options = production ? { expiresIn: 3600 * 30 * 1000 } : {};
+    const options = !req.body.remember ? { expiresIn: 3600 * 30 * 1000 } : {};
     const token = jwt.sign({ user: rest }, process.env.JWT_SECRET, options);
 
     res.json(new ResponseBuilder({ data: { token, user: rest } }));
