@@ -41,7 +41,8 @@ module.exports.getProjects = async function (req, res, next) {
         req.user,
         req.query.project_name
       );
-    } else {
+    }
+    if (!Object.keys(req.query).length) {
       projects = await Projects.getUserProjects(req.user);
     }
 

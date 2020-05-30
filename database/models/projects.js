@@ -25,16 +25,12 @@ Projects.getUserProjects = function (user) {
     return Projects.findAll();
   }
 
-  return sequelize.query(
-    `
-    SELECT projects.id, projects.project_name, projects.description, projects.owner_id, users.id as user_id
-    FROM projects
-    INNER JOIN workers ON projects.id = workers.project_id
-    INNER JOIN users ON users.id = workers.user_id
-    WHERE user_id = ${user.id} OR owner_id = ${user.id}
-    `,
-    { bind: ["active"], raw: false, type: Sequelize.QueryTypes.SELECT }
-  );
+  return Projects.findAll({
+    where: {
+      [Sequelize.Op.or]: [{ owner_id: user.id }, { "$Users.id$": user.id }],
+    },
+    include: [{ model: Users, attributes: [] }],
+  });
 };
 
 Projects.getUserProjectsBySubstring = async function (user, substring) {
@@ -45,16 +41,14 @@ Projects.getUserProjectsBySubstring = async function (user, substring) {
       },
     });
   }
-  return sequelize.query(
-    `
-    SELECT projects.id, projects.project_name, projects.description, projects.owner_id, users.id as user_id
-    FROM projects
-    INNER JOIN workers ON projects.id = workers.project_id
-    INNER JOIN users ON users.id = workers.user_id
-    WHERE user_id = ${user.id} AND project_name LIKE '%${substring}%' OR owner_id = ${user.id} AND project_name LIKE '%${substring}%'
-    `,
-    { bind: ["active"], raw: false, type: Sequelize.QueryTypes.SELECT }
-  );
+
+  return Projects.findAll({
+    where: {
+      [Sequelize.Op.or]: [{ owner_id: user.id }, { "$Users.id$": user.id }],
+      project_name: { [Sequelize.Op.substring]: substring },
+    },
+    include: [{ model: Users, attributes: [] }],
+  });
 };
 
 Projects.getProjectById = function (user, id) {

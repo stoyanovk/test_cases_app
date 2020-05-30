@@ -15,15 +15,7 @@ module.exports.getUsers = async function (req, res, next) {
   }
 };
 
-module.exports.getLoginUser = async function (req, res, next) {
-  try {
-    return res.json(
-      new ResponseBuilder({ data: { token: req.token, user: req.user } })
-    );
-  } catch (e) {
-    next(e);
-  }
-};
+
 
 module.exports.getUserById = async function (req, res, next) {
   try {

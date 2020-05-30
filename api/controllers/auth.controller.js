@@ -87,6 +87,16 @@ module.exports.confirm = async function (req, res, next) {
   }
 };
 
+module.exports.getLoginUser = async function (req, res, next) {
+  try {
+    return res.json(
+      new ResponseBuilder({ data: { token: req.token, user: req.user } })
+    );
+  } catch (e) {
+    next(e);
+  }
+};
+
 module.exports.login = async function (req, res, next) {
   try {
     const candidate = await Users.findOne({ where: { email: req.body.email } });

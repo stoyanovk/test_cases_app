@@ -7,7 +7,12 @@ const {
   restorePassword,
 } = require("../../validations/authValidators");
 
+const access = require("../../middleware/access");
+const updateToken = require("../../middleware/updateToken");
+
 const routes = new Router();
+
+routes.get("/auth/me", access, updateToken, auth.getLoginUser);
 
 routes.post("/auth/register", registerValidations, auth.register);
 
