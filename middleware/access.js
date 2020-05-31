@@ -19,7 +19,8 @@ function access(req, res, next) {
     if (!decoded) {
       throw new UnauthorizedError({ message: "login please" });
     }
-    req.user = { ...decoded.user };
+    req.user = decoded.user;
+    req.remember = decoded.remember;
     return next();
   } catch (e) {
     return next(e);

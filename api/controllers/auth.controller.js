@@ -16,8 +16,6 @@ const {
   getConfirmRegisterLayout,
 } = require("../../helpers/mails");
 
-const production = process.env.NODE_ENV === "production";
-
 const options = {
   auth: {
     api_key: process.env.MAIL_API_KEY,
@@ -115,8 +113,13 @@ module.exports.login = async function (req, res, next) {
       dataValues: { password, ...rest },
     } = candidate;
 
-    const options = !req.body.remember ? { expiresIn: 3600 * 30 * 1000 } : {};
-    const token = jwt.sign({ user: rest }, process.env.JWT_SECRET, options);
+    const options = !req.body.remember ? { expiresIn: 3600 * 30 * 1000 } : null;
+    
+    const token = jwt.sign(
+      { user: rest, remember: !!options },
+      process.env.JWT_SECRET,
+      options
+    );
 
     res.json(new ResponseBuilder({ data: { token, user: rest } }));
   } catch (e) {
