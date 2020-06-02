@@ -1,5 +1,6 @@
 const Tasks = require("../../database/models/tasks");
 const Results = require("../../database/models/results");
+const Comments = require("../../database/models/comments");
 const { NotFoundError, WrongParametersError } = require("../../helpers/errors");
 const ResponseBuilder = require("../../helpers/responseBuilder");
 
@@ -46,7 +47,9 @@ module.exports.getResults = async function (req, res, next) {
 
 module.exports.getResultById = async function (req, res, next) {
   try {
-    const result = await Results.findByPk(req.params.result_id);
+    const result = await Results.findByPk(req.params.result_id, {
+      include: { model: Comments, attributes: ["description"] },
+    });
     if (result === null) {
       throw new NotFoundError({ message: "Result is not found" });
     }
