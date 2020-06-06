@@ -3,11 +3,11 @@ const Sequelize = require("sequelize");
 
 // Option 1: Passing parameters separately
 const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASS,
+  process.env.DB,
+  process.env.USER,
+  process.env.PASSWORD,
   {
-    host: process.env.DB_HOST,
+    host: process.env.HOST,
     dialect: "mysql"
   }
 );
