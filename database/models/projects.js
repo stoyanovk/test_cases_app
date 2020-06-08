@@ -52,9 +52,17 @@ Projects.getUserProjectsBySubstring = async function (user, substring) {
 };
 
 Projects.getProjectById = function (user, id) {
-  // if (user.admin) {
-  //   return Projects.findByPk(id);
-  // }
+  if (user.admin) {
+    return Projects.findOne({
+      where: { id },
+      include: [
+        {
+          model: Tasks,
+          attributes: ["task_name", "description"],
+        },
+      ],
+    });
+  }
 
   return Projects.findOne({
     where: { id },
