@@ -65,13 +65,11 @@ Projects.getProjectById = function (user, id) {
   }
 
   return Projects.findOne({
-    where: { id },
+    where: {
+      [Sequelize.Op.or]: [{ owner_id: user.id }, { "$Users.id$": user.id }],
+    },
     include: [
-      {
-        model: Users,
-        attributes: [],
-        where: { id: user.id },
-      },
+      { model: Users, attributes: [] },
       {
         model: Tasks,
         attributes: ["task_name", "description"],
