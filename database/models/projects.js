@@ -66,6 +66,7 @@ Projects.getProjectById = function (user, id) {
 
   return Projects.findOne({
     where: {
+      id,
       [Sequelize.Op.or]: [{ owner_id: user.id }, { "$Users.id$": user.id }],
     },
     include: [
