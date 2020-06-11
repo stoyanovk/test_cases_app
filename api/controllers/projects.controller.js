@@ -49,9 +49,10 @@ module.exports.getProjects = async function (req, res, next) {
     if (projects === null) {
       throw new NotFoundError({ message: "Projects is not found" });
     }
-    return res.json(
-      new ResponseBuilder({ data: { token: req.token, projects } })
-    );
+    // return res.json(
+    //   new ResponseBuilder({ data: { token: req.token, projects } })
+    // );
+    return new ResponseBuilder(res).build({ data: projects });
   } catch (e) {
     next(e);
   }
