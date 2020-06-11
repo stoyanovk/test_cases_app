@@ -52,7 +52,8 @@ module.exports.getProjects = async function (req, res, next) {
     // return res.json(
     //   new ResponseBuilder({ data: { token: req.token, projects } })
     // );
-    return new ResponseBuilder(res).build({ data: projects });
+    // console.log("====================", req.token);
+    return new ResponseBuilder(res).build({ data: { projects } });
   } catch (e) {
     next(e);
   }

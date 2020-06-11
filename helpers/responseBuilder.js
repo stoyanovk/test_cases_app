@@ -6,9 +6,11 @@ class ResponseBuilder {
   build({ code = 200, status = "success", data }) {
     this.response.status(code);
     return this.response.json({
-      data,
-      token: this.response.token || "",
       status,
+      data: {
+        token: this.response.req.token || "",
+        ...data,
+      },
     });
   }
 }
