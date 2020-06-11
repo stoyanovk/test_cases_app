@@ -130,7 +130,7 @@ CREATE TABLE `SequelizeMeta` (
 
 LOCK TABLES `SequelizeMeta` WRITE;
 /*!40000 ALTER TABLE `SequelizeMeta` DISABLE KEYS */;
-INSERT INTO `SequelizeMeta` VALUES ('20200424055104-add_desc_in_tasks.js'),('20200426185736-add_comments_column_owner_id.js'),('20200429184135-change_result_type.js');
+INSERT INTO `SequelizeMeta` VALUES ('20200424055104-add_desc_in_tasks.js'),('20200426185736-add_comments_column_owner_id.js'),('20200429184135-change_result_type.js'),('20200611141544-remove_subtasks.js');
 /*!40000 ALTER TABLE `SequelizeMeta` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -146,15 +146,12 @@ CREATE TABLE `tasks` (
   `task_name` varchar(255) DEFAULT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
-  `task_id` int DEFAULT NULL,
   `owner_id` int DEFAULT NULL,
   `project_id` int DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `task_id` (`task_id`),
   KEY `owner_id` (`owner_id`),
   KEY `project_id` (`project_id`),
-  CONSTRAINT `tasks_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `tasks_ibfk_2` FOREIGN KEY (`owner_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `tasks_ibfk_3` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -166,7 +163,7 @@ CREATE TABLE `tasks` (
 
 LOCK TABLES `tasks` WRITE;
 /*!40000 ALTER TABLE `tasks` DISABLE KEYS */;
-INSERT INTO `tasks` VALUES (6,'test ','2020-04-26 06:36:18','2020-04-26 06:36:18',NULL,1,1,'make great test');
+INSERT INTO `tasks` VALUES (6,'test ','2020-04-26 06:36:18','2020-04-26 06:36:18',1,1,'make great test');
 /*!40000 ALTER TABLE `tasks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -247,4 +244,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-06-05 14:09:50
+-- Dump completed on 2020-06-11 17:33:35
