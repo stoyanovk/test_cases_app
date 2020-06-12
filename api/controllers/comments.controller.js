@@ -2,7 +2,7 @@ const Tasks = require("../../database/models/tasks");
 const Results = require("../../database/models/results");
 const Comments = require("../../database/models/comments");
 const { NotFoundError, WrongParametersError } = require("../../helpers/errors");
-const ResponseBuilder = require("../../helpers/responseBuilder");
+const ResponseSender = require("../../helpers/responseSender");
 
 module.exports.createComment = async function (req, res, next) {
   try {
@@ -24,13 +24,10 @@ module.exports.createComment = async function (req, res, next) {
       result_id: req.params.result_id || null,
       owner_id: req.user.id,
     });
-
-    return res.json(
-      new ResponseBuilder({
-        code: 201,
-        data: { token: req.token, comment: createdComments },
-      })
-    );
+    return new ResponseSender(req, req).send({
+      code: 201,
+      data: { comment: createdComments },
+    });
   } catch (e) {
     next(e);
   }
@@ -45,10 +42,9 @@ module.exports.getComments = async function (req, res, next) {
     const comments = await Comments.findAll({
       where: { task_id: req.params.task_id },
     });
-
-    return res.json(
-      new ResponseBuilder({ data: { token: req.token, comments } })
-    );
+    return new ResponseSender(req, req).send({
+      data: { comments },
+    });
   } catch (e) {
     next(e);
   }
@@ -60,9 +56,9 @@ module.exports.getCommentById = async function (req, res, next) {
     if (comment === null) {
       throw new NotFoundError({ message: "Comment is not found" });
     }
-    return res.json(
-      new ResponseBuilder({ data: { token: req.token, comment } })
-    );
+    return new ResponseSender(req, req).send({
+      data: { comment },
+    });
   } catch (e) {
     next(e);
   }
@@ -78,10 +74,9 @@ module.exports.editComment = async function (req, res, next) {
     await comment.update({
       description: req.body.description || "",
     });
-
-    return res.json(
-      new ResponseBuilder({ data: { token: req.token, comment } })
-    );
+    return new ResponseSender(req, req).send({
+      data: { comment },
+    });
   } catch (e) {
     next(e);
   }
@@ -97,12 +92,9 @@ module.exports.deleteComment = async function (req, res, next) {
     if (!commentIsDeleted) {
       throw new NotFoundError({ message: "Comment is not found" });
     }
-
-    return res.json(
-      new ResponseBuilder({
-        data: { token: req.token, message: "Comment deleted successfully" },
-      })
-    );
+    return new ResponseSender(req, req).send({
+      data: { message: "Comment deleted successfully" },
+    });
   } catch (e) {
     next(e);
   }

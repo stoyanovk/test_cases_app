@@ -2,7 +2,7 @@ const Projects = require("../../database/models/projects");
 const Users = require("../../database/models/users");
 const Workers = require("../../database/models/workers");
 const { NotFoundError, WrongParametersError } = require("../../helpers/errors");
-const ResponseBuilder = require("../../helpers/responseBuilder");
+const ResponseSender = require("../../helpers/responseSender");
 
 module.exports.createProject = async function (req, res, next) {
   try {
@@ -21,13 +21,10 @@ module.exports.createProject = async function (req, res, next) {
       description: req.body.description || "",
       owner_id: req.user.id,
     });
-
-    return res.json(
-      new ResponseBuilder({
-        code: 201,
-        data: { token: req.token, project: createdProject },
-      })
-    );
+    return new ResponseSender(req, req).send({
+      code: 201,
+      data: { project: createdProject },
+    });
   } catch (e) {
     next(e);
   }
@@ -49,11 +46,10 @@ module.exports.getProjects = async function (req, res, next) {
     if (projects === null) {
       throw new NotFoundError({ message: "Projects is not found" });
     }
-    // return res.json(
-    //   new ResponseBuilder({ data: { token: req.token, projects } })
-    // );
-    // console.log("====================", req.token);
-    return new ResponseBuilder(res).build({ data: { projects } });
+
+    return new ResponseSender(req, req).send({
+      data: { projects },
+    });
   } catch (e) {
     next(e);
   }
@@ -68,10 +64,9 @@ module.exports.getProjectById = async function (req, res, next) {
     if (project === null) {
       throw new NotFoundError({ message: "Project is not found" });
     }
-
-    return res.json(
-      new ResponseBuilder({ data: { token: req.token, project } })
-    );
+    return new ResponseSender(req, req).send({
+      data: { project },
+    });
   } catch (e) {
     next(e);
   }
@@ -90,10 +85,9 @@ module.exports.editProject = async function (req, res, next) {
       project_name: req.body.project_name,
       description: req.body.description,
     });
-
-    return res.json(
-      new ResponseBuilder({ data: { token: req.token, project } })
-    );
+    return new ResponseSender(req, req).send({
+      data: { project },
+    });
   } catch (e) {
     next(e);
   }
@@ -110,12 +104,9 @@ module.exports.deleteProject = async function (req, res, next) {
     await Workers.destroy({
       where: { project_id: req.params.id },
     });
-
-    return res.json(
-      new ResponseBuilder({
-        data: { token: req.token, message: "Project deleted successfully" },
-      })
-    );
+    return new ResponseSender(req, req).send({
+      data: { message: "Project deleted successfully" },
+    });
   } catch (e) {
     next(e);
   }

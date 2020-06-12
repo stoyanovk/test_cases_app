@@ -2,7 +2,7 @@ const Tasks = require("../../database/models/tasks");
 const Results = require("../../database/models/results");
 const Comments = require("../../database/models/comments");
 const { NotFoundError, WrongParametersError } = require("../../helpers/errors");
-const ResponseBuilder = require("../../helpers/responseBuilder");
+const ResponseSender = require("../../helpers/responseSender");
 
 module.exports.addResult = async function (req, res, next) {
   try {
@@ -20,10 +20,10 @@ module.exports.addResult = async function (req, res, next) {
       task_id: req.params.task_id,
       owner_id: req.user.id,
     });
-
-    return res.json(
-      new ResponseBuilder({ code: 201, data: { token: req.token, result } })
-    );
+    return new ResponseSender(req, req).send({
+      code: 201,
+      data: { result },
+    });
   } catch (e) {
     next(e);
   }
@@ -37,9 +37,9 @@ module.exports.getResults = async function (req, res, next) {
     const results = await Results.findAll({
       where: { task_id: req.params.task_id },
     });
-    return res.json(
-      new ResponseBuilder({ data: { token: req.token, results } })
-    );
+    return new ResponseSender(req, req).send({
+      data: { results },
+    });
   } catch (e) {
     next(e);
   }
@@ -53,9 +53,9 @@ module.exports.getResultById = async function (req, res, next) {
     if (result === null) {
       throw new NotFoundError({ message: "Result is not found" });
     }
-    return res.json(
-      new ResponseBuilder({ data: { token: req.token, result } })
-    );
+    return new ResponseSender(req, req).send({
+      data: { result },
+    });
   } catch (e) {
     next(e);
   }
@@ -71,9 +71,9 @@ module.exports.editResult = async function (req, res, next) {
       result: req.body.result,
       owner_id: req.user.id,
     });
-    return res.json(
-      new ResponseBuilder({ data: { token: req.token, result } })
-    );
+    return new ResponseSender(req, req).send({
+      data: { result },
+    });
   } catch (e) {
     next(e);
   }
@@ -89,12 +89,9 @@ module.exports.deleteResult = async function (req, res, next) {
     if (!resultIsDeleted) {
       throw new NotFoundError({ message: "Result is not found" });
     }
-
-    return res.json(
-      new ResponseBuilder({
-        data: { token: req.token, message: "Comment deleted successfully" },
-      })
-    );
+    return new ResponseSender(req, req).send({
+      data: { message: "Comment deleted successfully" },
+    });
   } catch (e) {
     next(e);
   }

@@ -4,7 +4,7 @@ const sgTransport = require("nodemailer-sendgrid-transport");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const ResponseBuilder = require("../../helpers/responseBuilder");
+const ResponseSender = require("../../helpers/responseSender");
 
 const {
   WrongParametersError,
@@ -42,16 +42,12 @@ module.exports.register = async function (req, res, next) {
     });
 
     await mailer.sendMail(getConfirmRegisterLayout(req.body.email, token));
-
-    res.json(
-      new ResponseBuilder({
-        code: 201,
-        data: {
-          message:
-            "To continue registration, go to the specified mailing address in next 30 min",
-        },
-      })
-    );
+    return new ResponseSender(req, res).send({
+      data: {
+        message:
+          "To continue registration, go to the specified mailing address in next 30 min",
+      },
+    });
   } catch (e) {
     next(e);
   }
@@ -74,12 +70,12 @@ module.exports.confirm = async function (req, res, next) {
     if (!user) {
       throw new WrongParametersError({ message: "Wrong data" });
     }
-    res.json(
-      new ResponseBuilder({
-        code: 201,
-        data: { message: "user successfully registered" },
-      })
-    );
+    return new ResponseSender(req, res).send({
+      code: 201,
+      data: {
+        message: "user successfully registered",
+      },
+    });
   } catch (e) {
     next(e);
   }
@@ -87,9 +83,11 @@ module.exports.confirm = async function (req, res, next) {
 
 module.exports.getLoginUser = async function (req, res, next) {
   try {
-    return res.json(
-      new ResponseBuilder({ data: { token: req.token, user: req.user } })
-    );
+    return new ResponseSender(req, res).send({
+      data: {
+        user: req.user,
+      },
+    });
   } catch (e) {
     next(e);
   }
@@ -114,14 +112,18 @@ module.exports.login = async function (req, res, next) {
     } = candidate;
 
     const options = !req.body.remember ? { expiresIn: 3600 * 30 * 1000 } : null;
-    
+
     const token = jwt.sign(
       { user: rest, remember: !!options },
       process.env.JWT_SECRET,
       options
     );
-
-    res.json(new ResponseBuilder({ data: { token, user: rest } }));
+    return new ResponseSender(req, res).send({
+      data: {
+        user: rest,
+        token,
+      },
+    });
   } catch (e) {
     next(e);
   }
@@ -139,11 +141,11 @@ module.exports.resetPassword = async function (req, res, next) {
         }
       );
       await mailer.sendMail(getResetPasswordLayout(req.body.email, token));
-      return res.json(
-        new ResponseBuilder({
-          data: { message: "To recover your password, go to the email" },
-        })
-      );
+      return new ResponseSender(req, res).send({
+        data: {
+          message: "To recover your password, go to the email",
+        },
+      });
     }
 
     throw new WrongParametersError({
@@ -161,11 +163,11 @@ module.exports.restorePassword = async function (req, res, next) {
     if (decoded.email) {
       const password = await bcrypt.hash(req.body.password, 10);
       await Users.update({ password }, { where: { email: decoded.email } });
-      return res.json(
-        new ResponseBuilder({
-          data: { message: "password was restored" },
-        })
-      );
+      return new ResponseSender(req, res).send({
+        data: {
+          message: "password was restored",
+        },
+      });
     }
     throw new WrongParametersError("params is not valid");
   } catch (e) {

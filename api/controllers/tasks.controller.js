@@ -4,7 +4,7 @@ const Comments = require("../../database/models/comments");
 const Results = require("../../database/models/results");
 const Tasks = require("../../database/models/tasks");
 const { NotFoundError, WrongParametersError } = require("../../helpers/errors");
-const ResponseBuilder = require("../../helpers/responseBuilder");
+const ResponseSender = require("../../helpers/responseSender");
 
 module.exports.createTask = async function (req, res, next) {
   try {
@@ -18,13 +18,10 @@ module.exports.createTask = async function (req, res, next) {
       owner_id: req.user.id,
       project_id: req.params.project_id,
     });
-
-    return res.json(
-      new ResponseBuilder({
-        code: 201,
-        data: { token: req.token, task: createdTask },
-      })
-    );
+    return new ResponseSender(req, req).send({
+      code: 201,
+      data: { task: createdTask },
+    });
   } catch (e) {
     next(e);
   }
@@ -40,7 +37,9 @@ module.exports.getTasks = async function (req, res, next) {
       where: { project_id: req.params.project_id },
     });
 
-    return res.json(new ResponseBuilder({ data: { token: req.token, tasks } }));
+    return new ResponseSender(req, req).send({
+      data: { tasks },
+    });
   } catch (e) {
     next(e);
   }
@@ -60,7 +59,9 @@ module.exports.getTaskById = async function (req, res, next) {
     if (task === null) {
       throw new NotFoundError({ message: "Task is not found" });
     }
-    return res.json(new ResponseBuilder({ data: { token: req.token, task } }));
+    return new ResponseSender(req, req).send({
+      data: { task },
+    });
   } catch (e) {
     next(e);
   }
@@ -78,7 +79,9 @@ module.exports.editTask = async function (req, res, next) {
       description: req.body.description || task.description,
     });
 
-    return res.json(new ResponseBuilder({ data: { token: req.token, task } }));
+    return new ResponseSender(req, req).send({
+      data: { task },
+    });
   } catch (e) {
     next(e);
   }
@@ -94,11 +97,9 @@ module.exports.deleteTask = async function (req, res, next) {
     if (!taskIsDeleted) {
       throw new NotFoundError({ message: "Task is not found" });
     }
-    return res.json(
-      new ResponseBuilder({
-        data: { token: req.token, message: "Task deleted successfully" },
-      })
-    );
+    return new ResponseSender(req, req).send({
+      data: { message: "Task deleted successfully" },
+    });
   } catch (e) {
     next(e);
   }

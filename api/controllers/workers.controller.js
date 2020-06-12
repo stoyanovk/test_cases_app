@@ -2,7 +2,7 @@ const Workers = require("../../database/models/workers");
 const Users = require("../../database/models/users");
 const Projects = require("../../database/models/projects");
 const { NotFoundError } = require("../../helpers/errors");
-const ResponseBuilder = require("../../helpers/responseBuilder");
+const ResponseSender = require("../../helpers/responseSender");
 
 module.exports.addWorker = async function (req, res, next) {
   try {
@@ -10,13 +10,10 @@ module.exports.addWorker = async function (req, res, next) {
       project_id: req.body.projectId,
       user_id: req.body.userId,
     });
-
-    return res.json(
-      new ResponseBuilder({
-        code: 201,
-        data: { token: req.token, message: "Worker added successfully" },
-      })
-    );
+    return new ResponseSender(req, req).send({
+      code: 201,
+      data: { message: "Worker added successfully" },
+    });
   } catch (e) {
     next(e);
   }
@@ -37,12 +34,9 @@ module.exports.getWorkers = async function (req, res, next) {
       throw new NotFoundError({ message: "Workers is not found" });
     }
     const { users: workers } = project;
-
-    return res.json(
-      new ResponseBuilder({
-        data: { token: req.token, workers },
-      })
-    );
+    return new ResponseSender(req, req).send({
+      data: { workers },
+    });
   } catch (e) {
     next(e);
   }
@@ -60,12 +54,9 @@ module.exports.deleteWorker = async function (req, res, next) {
     if (!isDeleted) {
       throw new NotFoundError({ message: "Worker is not found" });
     }
-
-    return res.json(
-      new ResponseBuilder({
-        data: { token: req.token, message: "Worker is not found" },
-      })
-    );
+    return new ResponseSender(req, req).send({
+      data: { message: "Worker is not found" },
+    });
   } catch (e) {
     next(e);
   }

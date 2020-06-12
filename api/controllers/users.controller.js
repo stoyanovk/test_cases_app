@@ -1,7 +1,7 @@
 const Users = require("../../database/models/users");
 const { NotFoundError } = require("../../helpers/errors");
 const bcrypt = require("bcrypt");
-const ResponseBuilder = require("../../helpers/responseBuilder");
+const ResponseSender = require("../../helpers/responseSender");
 
 module.exports.getUsers = async function (req, res, next) {
   try {
@@ -9,13 +9,11 @@ module.exports.getUsers = async function (req, res, next) {
     if (users === null) {
       throw new NotFoundError({ message: "User is not found" });
     }
-    return res.json(new ResponseBuilder({ data: { token: req.token, users } }));
+    return new ResponseSender(req, req).send({ data: { users } });
   } catch (e) {
     next(e);
   }
 };
-
-
 
 module.exports.getUserById = async function (req, res, next) {
   try {
@@ -23,7 +21,7 @@ module.exports.getUserById = async function (req, res, next) {
     if (user === null) {
       throw new NotFoundError({ message: "User is not found" });
     }
-    return res.json(new ResponseBuilder({ data: { token: req.token, user } }));
+    return new ResponseSender(req, req).send({ data: { user } });
   } catch (e) {
     next(e);
   }
@@ -47,10 +45,7 @@ module.exports.editUser = async function (req, res, next) {
         ...rest
       },
     } = user;
-
-    return res.json(
-      new ResponseBuilder({ data: { token: req.token, user: rest } })
-    );
+    return new ResponseSender(req, req).send({ data: { user: rest } });
   } catch (e) {
     next(e);
   }
@@ -61,11 +56,9 @@ module.exports.deleteUser = async function (req, res, next) {
     if (!isDeleted) {
       throw new NotFoundError({ message: "User is not found" });
     }
-    return res.json(
-      new ResponseBuilder({
-        data: { token: req.token, message: "user deleted successfully" },
-      })
-    );
+    return new ResponseSender(req, req).send({
+      data: { message: "user deleted successfully" },
+    });
   } catch (e) {
     next(e);
   }
