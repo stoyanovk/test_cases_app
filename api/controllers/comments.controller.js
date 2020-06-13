@@ -24,7 +24,7 @@ module.exports.createComment = async function (req, res, next) {
       result_id: req.params.result_id || null,
       owner_id: req.user.id,
     });
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       code: 201,
       data: { comment: createdComments },
     });
@@ -42,7 +42,7 @@ module.exports.getComments = async function (req, res, next) {
     const comments = await Comments.findAll({
       where: { task_id: req.params.task_id },
     });
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { comments },
     });
   } catch (e) {
@@ -56,7 +56,7 @@ module.exports.getCommentById = async function (req, res, next) {
     if (comment === null) {
       throw new NotFoundError({ message: "Comment is not found" });
     }
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { comment },
     });
   } catch (e) {
@@ -74,7 +74,7 @@ module.exports.editComment = async function (req, res, next) {
     await comment.update({
       description: req.body.description || "",
     });
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { comment },
     });
   } catch (e) {
@@ -92,7 +92,7 @@ module.exports.deleteComment = async function (req, res, next) {
     if (!commentIsDeleted) {
       throw new NotFoundError({ message: "Comment is not found" });
     }
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { message: "Comment deleted successfully" },
     });
   } catch (e) {

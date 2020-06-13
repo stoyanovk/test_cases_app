@@ -18,7 +18,7 @@ module.exports.createTask = async function (req, res, next) {
       owner_id: req.user.id,
       project_id: req.params.project_id,
     });
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       code: 201,
       data: { task: createdTask },
     });
@@ -37,7 +37,7 @@ module.exports.getTasks = async function (req, res, next) {
       where: { project_id: req.params.project_id },
     });
 
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { tasks },
     });
   } catch (e) {
@@ -59,7 +59,7 @@ module.exports.getTaskById = async function (req, res, next) {
     if (task === null) {
       throw new NotFoundError({ message: "Task is not found" });
     }
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { task },
     });
   } catch (e) {
@@ -75,11 +75,11 @@ module.exports.editTask = async function (req, res, next) {
       throw new NotFoundError({ message: "Task is not found" });
     }
     await task.update({
-      project_name: req.body.task_name || task.task_name,
+      task_name: req.body.task_name || task.task_name,
       description: req.body.description || task.description,
     });
 
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { task },
     });
   } catch (e) {
@@ -90,14 +90,12 @@ module.exports.editTask = async function (req, res, next) {
 module.exports.deleteTask = async function (req, res, next) {
   try {
     const taskIsDeleted = await Tasks.destroy({
-      where: {
-        [Op.or]: [{ id: req.params.task_id }, { task_id: req.params.task_id }],
-      },
+      where: { id: req.params.task_id },
     });
     if (!taskIsDeleted) {
       throw new NotFoundError({ message: "Task is not found" });
     }
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { message: "Task deleted successfully" },
     });
   } catch (e) {

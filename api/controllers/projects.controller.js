@@ -21,7 +21,7 @@ module.exports.createProject = async function (req, res, next) {
       description: req.body.description || "",
       owner_id: req.user.id,
     });
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       code: 201,
       data: { project: createdProject },
     });
@@ -47,7 +47,7 @@ module.exports.getProjects = async function (req, res, next) {
       throw new NotFoundError({ message: "Projects is not found" });
     }
 
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { projects },
     });
   } catch (e) {
@@ -64,7 +64,7 @@ module.exports.getProjectById = async function (req, res, next) {
     if (project === null) {
       throw new NotFoundError({ message: "Project is not found" });
     }
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { project },
     });
   } catch (e) {
@@ -74,10 +74,7 @@ module.exports.getProjectById = async function (req, res, next) {
 
 module.exports.editProject = async function (req, res, next) {
   try {
-    const project = await Projects.findOne({
-      where: { id: req.params.project_id },
-      include: [{ model: Users, attributes: [], where: { id: req.user.id } }],
-    });
+    const project = await Projects.findByPk(req.params.project_id);
     if (project === null) {
       throw new NotFoundError({ message: "Project is not found" });
     }
@@ -85,7 +82,7 @@ module.exports.editProject = async function (req, res, next) {
       project_name: req.body.project_name,
       description: req.body.description,
     });
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { project },
     });
   } catch (e) {
@@ -95,16 +92,17 @@ module.exports.editProject = async function (req, res, next) {
 
 module.exports.deleteProject = async function (req, res, next) {
   try {
+    console.log(req.params.project_id);
     const projectIsDeleted = await Projects.destroy({
-      where: { id: req.params.id },
+      where: { id: req.params.project_id },
     });
     if (!projectIsDeleted) {
       throw new NotFoundError({ message: "Project is not found" });
     }
     await Workers.destroy({
-      where: { project_id: req.params.id },
+      where: { project_id: req.params.project_id },
     });
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { message: "Project deleted successfully" },
     });
   } catch (e) {

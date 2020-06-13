@@ -20,7 +20,7 @@ module.exports.addResult = async function (req, res, next) {
       task_id: req.params.task_id,
       owner_id: req.user.id,
     });
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       code: 201,
       data: { result },
     });
@@ -37,7 +37,7 @@ module.exports.getResults = async function (req, res, next) {
     const results = await Results.findAll({
       where: { task_id: req.params.task_id },
     });
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { results },
     });
   } catch (e) {
@@ -53,7 +53,7 @@ module.exports.getResultById = async function (req, res, next) {
     if (result === null) {
       throw new NotFoundError({ message: "Result is not found" });
     }
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { result },
     });
   } catch (e) {
@@ -71,7 +71,7 @@ module.exports.editResult = async function (req, res, next) {
       result: req.body.result,
       owner_id: req.user.id,
     });
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { result },
     });
   } catch (e) {
@@ -89,8 +89,8 @@ module.exports.deleteResult = async function (req, res, next) {
     if (!resultIsDeleted) {
       throw new NotFoundError({ message: "Result is not found" });
     }
-    return new ResponseSender(req, req).send({
-      data: { message: "Comment deleted successfully" },
+    return new ResponseSender(req, res).send({
+      data: { message: "Result deleted successfully" },
     });
   } catch (e) {
     next(e);

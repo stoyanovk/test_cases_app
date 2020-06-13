@@ -9,7 +9,7 @@ module.exports.getUsers = async function (req, res, next) {
     if (users === null) {
       throw new NotFoundError({ message: "User is not found" });
     }
-    return new ResponseSender(req, req).send({ data: { users } });
+    return new ResponseSender(req, res).send({ data: { users } });
   } catch (e) {
     next(e);
   }
@@ -21,7 +21,7 @@ module.exports.getUserById = async function (req, res, next) {
     if (user === null) {
       throw new NotFoundError({ message: "User is not found" });
     }
-    return new ResponseSender(req, req).send({ data: { user } });
+    return new ResponseSender(req, res).send({ data: { user } });
   } catch (e) {
     next(e);
   }
@@ -45,7 +45,7 @@ module.exports.editUser = async function (req, res, next) {
         ...rest
       },
     } = user;
-    return new ResponseSender(req, req).send({ data: { user: rest } });
+    return new ResponseSender(req, res).send({ data: { user: rest } });
   } catch (e) {
     next(e);
   }
@@ -56,7 +56,7 @@ module.exports.deleteUser = async function (req, res, next) {
     if (!isDeleted) {
       throw new NotFoundError({ message: "User is not found" });
     }
-    return new ResponseSender(req, req).send({
+    return new ResponseSender(req, res).send({
       data: { message: "user deleted successfully" },
     });
   } catch (e) {
