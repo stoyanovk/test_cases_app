@@ -58,7 +58,7 @@ Projects.getProjectById = function (user, id) {
       include: [
         {
           model: Tasks,
-          attributes: ["task_name", "description"],
+          attributes: ["task_name", "description", "id"],
         },
       ],
     });
@@ -73,7 +73,7 @@ Projects.getProjectById = function (user, id) {
       { model: Users, attributes: [] },
       {
         model: Tasks,
-        attributes: ["task_name", "description"],
+        attributes: ["task_name", "description", "id"],
       },
     ],
   });

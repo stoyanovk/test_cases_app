@@ -52,8 +52,8 @@ module.exports.getTaskById = async function (req, res, next) {
         id: req.params.task_id,
       },
       include: [
-        { model: Comments, attributes: ["description"] },
-        { model: Results, attributes: ["result", "createdAt"] },
+        { model: Comments, attributes: ["description", "id"] },
+        { model: Results, attributes: ["result", "createdAt", "id"] },
       ],
     });
     if (task === null) {
