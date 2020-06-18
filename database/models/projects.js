@@ -15,7 +15,11 @@ const Projects = sequelize.define("projects", {
   description: Sequelize.TEXT,
 });
 
-Projects.hasMany(Tasks, { foreignKey: "project_id" });
+Projects.hasMany(Tasks, {
+  foreignKey: "project_id",
+  onDelete: "cascade",
+  hooks: true,
+});
 Projects.belongsToMany(Users, { through: Workers, foreignKey: "project_id" });
 Users.belongsToMany(Projects, { through: Workers, foreignKey: "user_id" });
 Projects.belongsTo(Users, { foreignKey: "owner_id" });

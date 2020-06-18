@@ -34,9 +34,21 @@ const Users = sequelize.define("user", {
   },
 });
 
-Users.hasMany(Tasks, { foreignKey: "owner_id" });
-Users.hasMany(Results, { foreignKey: "owner_id" });
-Users.hasMany(Comments, { foreignKey: "owner_id" });
+Users.hasMany(Tasks, {
+  foreignKey: "owner_id",
+  onDelete: "cascade",
+  hooks: true,
+});
+Users.hasMany(Results, {
+  foreignKey: "owner_id",
+  onDelete: "cascade",
+  hooks: true,
+});
+Users.hasMany(Comments, {
+  foreignKey: "owner_id",
+  onDelete: "cascade",
+  hooks: true,
+});
 
 Users.createUser = async function (body) {
   try {

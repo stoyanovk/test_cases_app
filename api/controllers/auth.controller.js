@@ -108,6 +108,7 @@ module.exports.getLoginUser = async function (req, res, next) {
 
 module.exports.login = async function (req, res, next) {
   try {
+    console.log(123)
     const candidate = await Users.findOne({ where: { email: req.body.email } });
 
     if (!candidate) {
