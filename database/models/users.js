@@ -29,6 +29,9 @@ const Users = sequelize.define("user", {
     type: Sequelize.STRING,
     allowNull: true,
   },
+  token: {
+    type: Sequelize.STRING(1234),
+  },
 });
 
 Users.hasMany(Tasks, { foreignKey: "owner_id" });

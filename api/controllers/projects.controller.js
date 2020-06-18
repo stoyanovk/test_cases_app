@@ -92,7 +92,6 @@ module.exports.editProject = async function (req, res, next) {
 
 module.exports.deleteProject = async function (req, res, next) {
   try {
-    console.log(req.params.project_id);
     const projectIsDeleted = await Projects.destroy({
       where: { id: req.params.project_id },
     });

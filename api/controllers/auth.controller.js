@@ -83,9 +83,22 @@ module.exports.confirm = async function (req, res, next) {
 
 module.exports.getLoginUser = async function (req, res, next) {
   try {
+    const candidate = await Users.findByPk(req.user.id);
+
+    const options = !req.remember ? { expiresIn: 3600 * 30 * 1000 } : null;
+
+    const token = jwt.sign(
+      { user: req.user, remember: !!options },
+      process.env.JWT_SECRET,
+      options
+    );
+
+    await candidate.update({ token });
+
     return new ResponseSender(req, res).send({
       data: {
         user: req.user,
+        token,
       },
     });
   } catch (e) {
@@ -108,27 +121,42 @@ module.exports.login = async function (req, res, next) {
     }
     const {
       // eslint-disable-next-line no-unused-vars
-      dataValues: { password, ...rest },
+      dataValues: { password, token, ...rest },
     } = candidate;
 
     const options = !req.body.remember ? { expiresIn: 3600 * 30 * 1000 } : null;
 
-    const token = jwt.sign(
+    const responseToken = jwt.sign(
       { user: rest, remember: !!options },
       process.env.JWT_SECRET,
       options
     );
+
+    await candidate.update({ token: responseToken });
+
     return new ResponseSender(req, res).send({
       data: {
         user: rest,
-        token,
+        token: responseToken,
       },
     });
   } catch (e) {
     next(e);
   }
 };
-
+module.exports.logout = async function (req, res, next) {
+  try {
+    const candidate = await Users.findByPk(req.user.id);
+    await candidate.update({ token: null });
+    return new ResponseSender(req, res).send({
+      data: {
+        message: "you are logout",
+      },
+    });
+  } catch (e) {
+    next(e);
+  }
+};
 module.exports.resetPassword = async function (req, res, next) {
   try {
     const candidate = await Users.findOne({ where: { email: req.body.email } });

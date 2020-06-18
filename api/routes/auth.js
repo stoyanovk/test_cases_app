@@ -8,11 +8,12 @@ const {
 } = require("../../validations/authValidators");
 
 const access = require("../../middleware/access");
-const updateToken = require("../../middleware/updateToken");
 
 const routes = new Router();
 
-routes.get("/auth/me", access, updateToken, auth.getLoginUser);
+routes.get("/auth/me", access, auth.getLoginUser);
+
+routes.get("/auth/logout", access, auth.logout);
 
 routes.post("/auth/register", registerValidations, auth.register);
 
