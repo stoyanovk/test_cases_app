@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS `comments`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `comments` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `description` varchar(255) DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   `result_id` int DEFAULT NULL,
@@ -57,8 +57,8 @@ DROP TABLE IF EXISTS `projects`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `projects` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `project_name` varchar(255) DEFAULT NULL,
-  `description` text,
+  `project_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   `owner_id` int DEFAULT NULL,
@@ -118,7 +118,7 @@ DROP TABLE IF EXISTS `SequelizeMeta`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SequelizeMeta` (
-  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`name`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -130,7 +130,7 @@ CREATE TABLE `SequelizeMeta` (
 
 LOCK TABLES `SequelizeMeta` WRITE;
 /*!40000 ALTER TABLE `SequelizeMeta` DISABLE KEYS */;
-INSERT INTO `SequelizeMeta` VALUES ('20200424055104-add_desc_in_tasks.js'),('20200426185736-add_comments_column_owner_id.js'),('20200429184135-change_result_type.js'),('20200611141544-remove_subtasks.js');
+INSERT INTO `SequelizeMeta` VALUES ('20200424055104-add_desc_in_tasks.js'),('20200426185736-add_comments_column_owner_id.js'),('20200429184135-change_result_type.js'),('20200611141544-remove_subtasks.js'),('20200618064317-add_user_token.js');
 /*!40000 ALTER TABLE `SequelizeMeta` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -143,12 +143,12 @@ DROP TABLE IF EXISTS `tasks`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tasks` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `task_name` varchar(255) DEFAULT NULL,
+  `task_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   `owner_id` int DEFAULT NULL,
   `project_id` int DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `owner_id` (`owner_id`),
   KEY `project_id` (`project_id`),
@@ -176,12 +176,13 @@ DROP TABLE IF EXISTS `users`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `user_name` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
+  `user_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `admin` tinyint(1) NOT NULL DEFAULT '0',
-  `email` varchar(255) DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
+  `token` varchar(1234) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -192,7 +193,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','$2b$10$z4sq0JMoZUeaKi0TexCd2eSjjajpLsrTliBI6v2i0ZD9w0YyZ39Vu',1,'stoyanov.k1992@gmail.com','2020-04-21 07:07:37','2020-04-21 07:07:37'),(2,'user','$2b$10$5jI2ZoVaVY3o8wuRZo1ExeP5cVt2FfcO1g569v.5dUEwMvcRg3F0q',0,'123stoyanov.k1992@gmail.ru','2020-04-21 07:24:42','2020-04-21 07:24:42');
+INSERT INTO `users` VALUES (1,'admin','$2b$10$z4sq0JMoZUeaKi0TexCd2eSjjajpLsrTliBI6v2i0ZD9w0YyZ39Vu',1,'stoyanov.k1992@gmail.com','2020-04-21 07:07:37','2020-04-21 07:07:37',NULL),(2,'user','$2b$10$5jI2ZoVaVY3o8wuRZo1ExeP5cVt2FfcO1g569v.5dUEwMvcRg3F0q',0,'123stoyanov.k1992@gmail.ru','2020-04-21 07:24:42','2020-04-21 07:24:42',NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -244,4 +245,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-06-11 17:33:35
+-- Dump completed on 2020-06-18 16:55:32

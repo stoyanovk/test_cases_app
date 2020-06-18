@@ -1,5 +1,5 @@
 const Projects = require("../../database/models/projects");
-const Users = require("../../database/models/users");
+const Tasks = require("../../database/models/tasks");
 const Workers = require("../../database/models/workers");
 const { NotFoundError, WrongParametersError } = require("../../helpers/errors");
 const ResponseSender = require("../../helpers/responseSender");
@@ -98,9 +98,12 @@ module.exports.deleteProject = async function (req, res, next) {
     if (!projectIsDeleted) {
       throw new NotFoundError({ message: "Project is not found" });
     }
-    await Workers.destroy({
-      where: { project_id: req.params.project_id },
-    });
+    // await Workers.destroy({
+    //   where: { project_id: req.params.project_id },
+    // });
+
+    // await Tasks.destroy({ where: { project_id: req.params.project_id } });
+
     return new ResponseSender(req, res).send({
       data: { message: "Project deleted successfully" },
     });
