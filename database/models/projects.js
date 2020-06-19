@@ -20,6 +20,7 @@ Projects.hasMany(Tasks, {
   onDelete: "cascade",
   hooks: true,
 });
+
 Projects.belongsToMany(Users, { through: Workers, foreignKey: "project_id" });
 Users.belongsToMany(Projects, { through: Workers, foreignKey: "user_id" });
 Projects.belongsTo(Users, { foreignKey: "owner_id" });
