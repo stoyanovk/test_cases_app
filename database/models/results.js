@@ -11,5 +11,9 @@ const Results = sequelize.define("results", {
   },
   result: Sequelize.BOOLEAN,
 });
-Results.hasMany(Comments, { foreignKey: "result_id" });
+Results.hasMany(Comments, {
+  foreignKey: "result_id",
+  onDelete: "cascade",
+  hooks: true,
+});
 module.exports = Results;

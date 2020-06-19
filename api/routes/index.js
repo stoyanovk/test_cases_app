@@ -7,14 +7,12 @@ const results = require("./results");
 const workers = require("./workers");
 
 const access = require("../../middleware/access");
-const updateToken = require("../../middleware/updateToken");
-
 
 module.exports = function (server) {
   server.use("/api", auth);
 
-  server.use("/api", access, updateToken);
-  
+  server.use("/api", access);
+
   server.use("/api", projects);
   server.use("/api", users);
   server.use("/api", tasks);

@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
+const Users = require("../database/models/users");
 const { BaseError, UnauthorizedError } = require("../helpers/errors");
 const production = process.env.NODE_ENV === "production";
 
-function access(req, res, next) {
+async function access(req, res, next) {
   try {
     if (production && !req.headers.referer.includes(process.env.RESOLVE_HOST)) {
       throw new BaseError({ message: "bad request" });
@@ -19,8 +20,18 @@ function access(req, res, next) {
     if (!decoded) {
       throw new UnauthorizedError({ message: "login please" });
     }
-    req.user = decoded.user;
+
+    const candidate = await Users.findOne({
+      where: { token },
+      attributes: ["id", "user_name", "email", "admin"],
+    });
+
+    if (!candidate) {
+      throw new UnauthorizedError({ message: "login please" });
+    }
+    req.user = candidate;
     req.remember = decoded.remember;
+
     return next();
   } catch (e) {
     return next(e);
