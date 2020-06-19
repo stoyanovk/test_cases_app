@@ -30,6 +30,7 @@ async function access(req, res, next) {
       throw new UnauthorizedError({ message: "login please" });
     }
     req.user = candidate;
+    req.token = token;
     req.remember = decoded.remember;
 
     return next();
