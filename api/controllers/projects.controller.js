@@ -1,6 +1,5 @@
 const Projects = require("../../database/models/projects");
 const Tasks = require("../../database/models/tasks");
-const Workers = require("../../database/models/workers");
 const { NotFoundError, WrongParametersError } = require("../../helpers/errors");
 const ResponseSender = require("../../helpers/responseSender");
 
@@ -21,6 +20,7 @@ module.exports.createProject = async function (req, res, next) {
       description: req.body.description || "",
       owner_id: req.user.id,
     });
+    console.log(createdProject);
     return new ResponseSender(req, res).send({
       code: 201,
       data: { project: createdProject },
@@ -74,7 +74,14 @@ module.exports.getProjectById = async function (req, res, next) {
 
 module.exports.editProject = async function (req, res, next) {
   try {
-    const project = await Projects.findByPk(req.params.project_id);
+    const project = await Projects.findByPk(req.params.project_id, {
+      include: [
+        {
+          model: Tasks,
+          attributes: ["task_name", "description", "id"],
+        },
+      ],
+    });
     if (project === null) {
       throw new NotFoundError({ message: "Project is not found" });
     }
