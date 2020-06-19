@@ -23,7 +23,7 @@ async function start() {
       console.log(`Example app listening on port ${PORT}!`);
     });
   } catch (e) {
-    // console.log(e);
+    console.log(e);
   }
 }
 start();
