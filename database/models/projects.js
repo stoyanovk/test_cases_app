@@ -60,12 +60,6 @@ Projects.getProjectById = function (user, id) {
   if (user.admin) {
     return Projects.findOne({
       where: { id },
-      include: [
-        {
-          model: Tasks,
-          attributes: ["task_name", "description", "id"],
-        },
-      ],
     });
   }
 
@@ -74,13 +68,6 @@ Projects.getProjectById = function (user, id) {
       id,
       [Sequelize.Op.or]: [{ owner_id: user.id }, { "$Users.id$": user.id }],
     },
-    include: [
-      { model: Users, attributes: [] },
-      {
-        model: Tasks,
-        attributes: ["task_name", "description", "id"],
-      },
-    ],
   });
 };
 module.exports = Projects;

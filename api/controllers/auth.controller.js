@@ -1,4 +1,5 @@
 const Users = require("../../database/models/users");
+const Tokens = require("../../database/models/tokens");
 const nodemailer = require("nodemailer");
 const sgTransport = require("nodemailer-sendgrid-transport");
 const { validationResult } = require("express-validator");
@@ -83,17 +84,17 @@ module.exports.confirm = async function (req, res, next) {
 
 module.exports.getLoginUser = async function (req, res, next) {
   try {
-    const candidate = await Users.findByPk(req.user.id);
+    const userToken = await Tokens.findOne({ token: req.token });
 
     const options = !req.remember ? { expiresIn: 3600 * 30 * 1000 } : null;
 
     const token = jwt.sign(
-      { user: req.user, remember: !!options },
+      { user: req.user, remember: !options },
       process.env.JWT_SECRET,
       options
     );
 
-    await candidate.update({ token });
+    await userToken.update({ token });
 
     return new ResponseSender(req, res).send({
       data: {
@@ -108,7 +109,6 @@ module.exports.getLoginUser = async function (req, res, next) {
 
 module.exports.login = async function (req, res, next) {
   try {
-    console.log(123);
     const candidate = await Users.findOne({ where: { email: req.body.email } });
 
     if (!candidate) {
@@ -122,7 +122,7 @@ module.exports.login = async function (req, res, next) {
     }
     const {
       // eslint-disable-next-line no-unused-vars
-      dataValues: { password, token, ...rest },
+      dataValues: { password, ...rest },
     } = candidate;
 
     const options = !req.body.remember ? { expiresIn: 3600 * 30 * 1000 } : null;
@@ -133,7 +133,7 @@ module.exports.login = async function (req, res, next) {
       options
     );
 
-    await candidate.update({ token: responseToken });
+    await Tokens.create({ token: responseToken, owner_id: candidate.id });
 
     return new ResponseSender(req, res).send({
       data: {
@@ -147,8 +147,8 @@ module.exports.login = async function (req, res, next) {
 };
 module.exports.logout = async function (req, res, next) {
   try {
-    const candidate = await Users.findByPk(req.user.id);
-    await candidate.update({ token: null });
+    await Tokens.logout(req.token);
+    
     return new ResponseSender(req, res).send({
       data: {
         message: "you are logout",

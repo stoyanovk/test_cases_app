@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const Users = require("../database/models/users");
+const Tokens = require("../database/models/tokens");
 const { BaseError, UnauthorizedError } = require("../helpers/errors");
 const production = process.env.NODE_ENV === "production";
 
@@ -22,13 +23,19 @@ async function access(req, res, next) {
     }
 
     const candidate = await Users.findOne({
-      where: { token },
-      attributes: ["id", "user_name", "email", "admin"],
+      include: [
+        {
+          model: Tokens,
+          attributes: ["id"],
+          where: { token },
+        },
+      ],
     });
 
     if (!candidate) {
       throw new UnauthorizedError({ message: "login please" });
     }
+
     req.user = candidate;
     req.token = token;
     req.remember = decoded.remember;
