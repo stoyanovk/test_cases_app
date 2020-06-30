@@ -20,7 +20,7 @@ module.exports.createProject = async function (req, res, next) {
       description: req.body.description || "",
       owner_id: req.user.id,
     });
-    console.log(createdProject);
+
     return new ResponseSender(req, res).send({
       code: 201,
       data: { project: createdProject },

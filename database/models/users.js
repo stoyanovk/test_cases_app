@@ -3,6 +3,7 @@ const sequelize = require("../database");
 const Tasks = require("./tasks");
 const Results = require("./results");
 const Comments = require("./comments");
+const Tokens = require("./tokens");
 const bcrypt = require("bcrypt");
 
 const Users = sequelize.define("user", {
@@ -29,9 +30,6 @@ const Users = sequelize.define("user", {
     type: Sequelize.STRING,
     allowNull: true,
   },
-  token: {
-    type: Sequelize.STRING(1234),
-  },
 });
 
 Users.hasMany(Tasks, {
@@ -45,6 +43,11 @@ Users.hasMany(Results, {
   hooks: true,
 });
 Users.hasMany(Comments, {
+  foreignKey: "owner_id",
+  onDelete: "cascade",
+  hooks: true,
+});
+Users.hasMany(Tokens, {
   foreignKey: "owner_id",
   onDelete: "cascade",
   hooks: true,

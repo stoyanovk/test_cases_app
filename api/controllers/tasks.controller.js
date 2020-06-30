@@ -1,7 +1,4 @@
-const { Op } = require("sequelize");
 const Projects = require("../../database/models/projects");
-const Comments = require("../../database/models/comments");
-const Results = require("../../database/models/results");
 const Tasks = require("../../database/models/tasks");
 const { NotFoundError, WrongParametersError } = require("../../helpers/errors");
 const ResponseSender = require("../../helpers/responseSender");
@@ -51,10 +48,6 @@ module.exports.getTaskById = async function (req, res, next) {
       where: {
         id: req.params.task_id,
       },
-      include: [
-        { model: Comments, attributes: ["description", "id"] },
-        { model: Results, attributes: ["result", "createdAt", "id"] },
-      ],
     });
     if (task === null) {
       throw new NotFoundError({ message: "Task is not found" });
