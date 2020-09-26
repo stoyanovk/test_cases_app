@@ -145,6 +145,7 @@ module.exports.login = async function (req, res, next) {
     next(e);
   }
 };
+
 module.exports.logout = async function (req, res, next) {
   try {
     await Tokens.logout(req.token);
@@ -159,6 +160,7 @@ module.exports.logout = async function (req, res, next) {
     next(e);
   }
 };
+
 module.exports.resetPassword = async function (req, res, next) {
   try {
     const candidate = await Users.findOne({ where: { email: req.body.email } });

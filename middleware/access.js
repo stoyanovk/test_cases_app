@@ -30,6 +30,8 @@ async function access(req, res, next) {
           where: { token },
         },
       ],
+      attributes:['id', 'admin', 'email', 'user_name'],
+      raw: true
     });
 
     if (!candidate) {
